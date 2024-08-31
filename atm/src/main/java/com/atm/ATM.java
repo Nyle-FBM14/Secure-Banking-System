@@ -9,7 +9,6 @@ import java.util.Base64;
 import javax.crypto.*;
 import java.util.HashMap;
 
-import java.util.Scanner;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -17,6 +16,9 @@ import javax.crypto.spec.SecretKeySpec;
 public class ATM {
     private static final String id = "ATM1";
 
+    public static void secureConnection(ObjectInputStream in, ObjectOutputStream out){
+
+    }
     public static void main(String[] args) {
         
         String hostName = "localhost";
@@ -31,42 +33,35 @@ public class ATM {
 
         try (
                 Socket socket = new Socket(hostName, portNumber);
-                PrintWriter out
-                = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader in
-                = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-                BufferedReader stdIn
-                = new BufferedReader(
-                        new InputStreamReader(System.in)))
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+            )
         {
-            int command = Integer.parseInt(stdIn.readLine());
-
-            switch(command){
-                case 0:
-
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    break;
-                case 6:
-                    break;
-                case 7:
-                    break;
-                default:
-
-            }
-            out.println("CONNECT");
-            out.println("ID1");
-            System.out.println(in.readLine());
-            socket.close();
+            secureConnection(in, out);
+            while(true){
+                int command = Integer.parseInt(stdIn.readLine());
+                HashMap<String, String> request = new HashMap<String, String>();
+                switch(command){
+                    case 0:
+                        request.put("REQUESTTYPE", "LOGIN");
+                        break;
+                    case 1:
+                        request.put("REQUESTTYPE", "DEPOSIT");
+                        break;
+                    case 2:
+                        request.put("REQUESTTYPE", "WITHDRAW");
+                        break;
+                    case 3:
+                        request.put("REQUESTTYPE", "CHECK");
+                        break;
+                    case 4:
+                        request.put("REQUESTTYPE", "LOGOUT");
+                        break;
+                    default:
+                        continue;
+                }
+            } //end of while loop
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
