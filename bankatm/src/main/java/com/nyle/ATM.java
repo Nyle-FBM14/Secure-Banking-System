@@ -16,9 +16,9 @@ import java.net.UnknownHostException;
 
 import com.nyle.controllers.Controller;
 
-public class App extends Application {
+public class ATM extends Application {
 
-    private static final String id = "ATM1";
+    private static String id = "ATM1";
     private static Scene scene;
     /*
         I think it's better to just make getter methods for the Object Input/Output Streams.
@@ -53,7 +53,7 @@ public class App extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ATM.class.getResource(fxml + ".fxml"));
         Parent root = fxmlLoader.load();
         Controller controller = fxmlLoader.getController();
         controller.setStreams(inputStream, outputStream);
@@ -67,9 +67,10 @@ public class App extends Application {
         String hostName = "localhost";
         int portNumber = 15777;
 
-        if (args.length == 2) {
+        if (args.length == 3) {
             hostName = args[0];
             portNumber = Integer.parseInt(args[1]);
+            id = args[2];
         }
         System.out.println("Host Name: " + hostName);
         System.out.println("Port #: " + portNumber);
