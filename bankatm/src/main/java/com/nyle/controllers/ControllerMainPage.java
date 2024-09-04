@@ -1,4 +1,4 @@
-package com.nyle;
+package com.nyle.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

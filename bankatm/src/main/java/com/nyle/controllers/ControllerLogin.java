@@ -1,6 +1,9 @@
-package com.nyle;
+package com.nyle.controllers;
 
 import java.io.IOException;
+
+import com.nyle.ATMModel;
+import com.nyle.App;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

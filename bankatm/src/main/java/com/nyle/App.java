@@ -14,10 +14,20 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.nyle.controllers.Controller;
+
 public class App extends Application {
 
     private static final String id = "ATM1";
     private static Scene scene;
+    /*
+        I think it's better to just make getter methods for the Object Input/Output Streams.
+        But I wanted to experiment with super classes and subclasses.
+        A Controller superclass will hold instance variables for the input and output streams.
+        Individual controller subclasses should be able to access the streams in the superclass' getter methods.
+    */
+    private static ObjectInputStream inputStream;
+    private static ObjectOutputStream outputStream;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -33,7 +43,7 @@ public class App extends Application {
         stage.show();
     }
 
-    static void setRoot(String fxml) {
+    public static void setRoot(String fxml) {
         try {
             scene.setRoot(loadFXML(fxml));
         } catch (IOException e) {
@@ -44,7 +54,10 @@ public class App extends Application {
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        Parent root = fxmlLoader.load();
+        Controller controller = fxmlLoader.getController();
+        controller.setStreams(inputStream, outputStream);
+        return root;
     }
 
     private static void secureConnection(ObjectInputStream in, ObjectOutputStream out) {
@@ -68,6 +81,8 @@ public class App extends Application {
                 BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
             )
         {
+            inputStream = in;
+            outputStream = out;
             secureConnection(in, out);
             launch();
         } catch (UnknownHostException e) {
