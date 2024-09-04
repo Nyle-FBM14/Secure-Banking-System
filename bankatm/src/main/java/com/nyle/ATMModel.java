@@ -1,6 +1,5 @@
 package com.nyle;
 
-import java.lang.
 public class ATMModel {
     private static volatile ATMModel modelInstance;
     private final int CARD_NUM_LEN = 16;
