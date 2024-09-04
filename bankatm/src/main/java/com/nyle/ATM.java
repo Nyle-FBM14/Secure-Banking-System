@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import com.nyle.controllers.Controller;
 
@@ -38,6 +39,11 @@ public class ATM extends Application {
         stage.setMaximized(true);
         stage.setTitle("Denarii Dispenser");
 
+        stage.setOnCloseRequest(event -> {
+            event.consume();
+            terminateConnection(1);
+        });
+
         scene = new Scene(loadFXML("login"), 700, 400);
         stage.setScene(scene);
         stage.show();
@@ -47,7 +53,6 @@ public class ATM extends Application {
         try {
             scene.setRoot(loadFXML(fxml));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -60,6 +65,28 @@ public class ATM extends Application {
         return root;
     }
 
+    @SuppressWarnings("unchecked")
+    private static boolean terminateConnection(int tries) {
+        try {
+            HashMap<String, String> request = new HashMap<String, String>();
+            request.put("REQUESTTYPE", "END");
+            outputStream.writeObject(request);
+            outputStream.flush();
+
+            HashMap<String, String> response = (HashMap<String, String>) inputStream.readObject();
+            System.out.println(response.get("RESPONSE"));
+
+            if(response.get("RESPONSE").equals("OK") || tries == 3){
+                return true;
+            }
+            else{
+                return terminateConnection(++tries);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
     private static void secureConnection(ObjectInputStream in, ObjectOutputStream out) {
         System.out.println("hehe");
     }

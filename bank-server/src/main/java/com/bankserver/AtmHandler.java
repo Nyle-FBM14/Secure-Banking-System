@@ -12,6 +12,7 @@ import com.bankserver.commands.CheckBalanceCommand;
 import com.bankserver.commands.Command;
 import com.bankserver.commands.ConnectCommand;
 import com.bankserver.commands.DepositCommand;
+import com.bankserver.commands.EndCommand;
 import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
@@ -70,6 +71,7 @@ public class AtmHandler extends Thread {
                         command = new RegisterCommand(in, out, request);
                         break;
                     case "END": //atm or program that registers users terminates their connection
+                        command = new EndCommand(in, out, request);
                         atm_online = false;
                         break;
                     default:
