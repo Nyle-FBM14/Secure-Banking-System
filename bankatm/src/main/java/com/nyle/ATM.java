@@ -41,7 +41,7 @@ public class ATM extends Application {
 
         stage.setOnCloseRequest(event -> {
             event.consume();
-            terminateConnection(1);
+            terminateConnection();
         });
 
         scene = new Scene(loadFXML("login"), 700, 400);
@@ -66,7 +66,7 @@ public class ATM extends Application {
     }
 
     @SuppressWarnings("unchecked")
-    private static boolean terminateConnection(int tries) {
+    private static void terminateConnection() {
         try {
             HashMap<String, String> request = new HashMap<String, String>();
             request.put("REQUESTTYPE", "END");
@@ -75,17 +75,9 @@ public class ATM extends Application {
 
             HashMap<String, String> response = (HashMap<String, String>) inputStream.readObject();
             System.out.println(response.get("RESPONSE"));
-
-            if(response.get("RESPONSE").equals("OK") || tries == 3){
-                return true;
-            }
-            else{
-                return terminateConnection(++tries);
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
     }
     private static void secureConnection(ObjectInputStream in, ObjectOutputStream out) {
         System.out.println("hehe");

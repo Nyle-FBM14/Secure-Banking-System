@@ -14,7 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-public class ControllerLogin extends Controller{
+public class ControllerLoginPage extends Controller{
+    private ATMModel model = ATMModel.getATMModelInstance();
     
     @FXML
     private Button buttonLogin;
@@ -26,7 +27,7 @@ public class ControllerLogin extends Controller{
     private PasswordField fieldPin;
 
     @SuppressWarnings("unchecked")
-    private boolean executeRequest() {
+    private boolean requestLogin() {
         try {
             ObjectOutputStream out = this.getOutStream();
             ObjectInputStream in = this.getInStream();
@@ -50,10 +51,9 @@ public class ControllerLogin extends Controller{
     }
     @FXML
     void login(ActionEvent event) {
-        ATMModel model = ATMModel.getATMModelInstance();
-        
         if(model.checkLogin(fieldCardNum.getText(), fieldPin.getText())){
-            if(executeRequest()) {
+            if(requestLogin()) {
+                model.setCredentials(fieldCardNum.getText(), fieldPin.getText());
                 ATM.setRoot("mainPage");
             }
         }

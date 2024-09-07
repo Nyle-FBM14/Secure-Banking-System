@@ -4,6 +4,8 @@ public class ATMModel {
     private static volatile ATMModel modelInstance;
     private final int CARD_NUM_LEN = 16;
     private final int MIN_PIN_LEN = 4;
+    private String cardNum;
+    private String pin;
 
     private ATMModel(){
         //idk what 
@@ -20,6 +22,16 @@ public class ATMModel {
         return modelTemp;
     }
 
+    public void setCredentials(String cardNum, String pin) {
+        this.cardNum = cardNum;
+        this.pin = pin;
+    }
+    public String getCardNum() {
+        return cardNum;
+    }
+    public String getPin() {
+        return pin;
+    }
     private boolean isEmpty(String str){
         return (str.length() == 0 || str == null);
     }
