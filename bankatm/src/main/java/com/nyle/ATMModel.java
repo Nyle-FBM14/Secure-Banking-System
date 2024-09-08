@@ -57,4 +57,14 @@ public class ATMModel {
 
         return (cardNum.length() == CARD_NUM_LEN && pin.length() >= MIN_PIN_LEN);
     }
+
+    public boolean checkAmount(String amount) {
+        //input shouldn't have decimals, comas, or negative signs
+        //input should be divisible by 5 - the smallest bill
+        if(isNumeric(amount)){
+            int money = Integer.parseInt(amount);
+            return (money%5) == 0;
+        }
+        return false;
+    }
 }
