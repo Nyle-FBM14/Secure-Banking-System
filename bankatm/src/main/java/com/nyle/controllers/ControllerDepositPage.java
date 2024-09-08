@@ -55,6 +55,16 @@ public class ControllerDepositPage extends Controller {
 
     @FXML
     void confirmDeposit(ActionEvent event) {
-        
+        if(model.checkAmount(fieldDepositAmount.getText())){
+            if(requestDeposit(fieldDepositAmount.getText())){
+                System.out.println("Make another deposit?");
+            }
+            else{
+                System.out.println("Server error");;
+            }
+        }
+        else{
+            System.out.println("Error");
+        }
     }
 }
