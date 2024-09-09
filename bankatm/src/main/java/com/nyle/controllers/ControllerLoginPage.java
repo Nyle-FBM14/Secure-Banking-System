@@ -1,6 +1,9 @@
 package com.nyle.controllers;
 
 import com.nyle.ATMModel;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
+import com.nyle.enumerations.ResponseStatusCodes;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,6 +19,8 @@ import javafx.scene.control.TextField;
 
 public class ControllerLoginPage extends Controller{
     private ATMModel model = ATMModel.getATMModelInstance();
+    private ObjectOutputStream out = this.getOutStream();
+    private ObjectInputStream in = this.getInStream();
     
     @FXML
     private Button buttonLogin;
@@ -29,21 +34,18 @@ public class ControllerLoginPage extends Controller{
     @SuppressWarnings("unchecked")
     private boolean requestLogin() {
         try {
-            ObjectOutputStream out = this.getOutStream();
-            ObjectInputStream in = this.getInStream();
-            
-            HashMap<String, String> request = new HashMap<String, String>();
-            request.put("REQUESTTYPE", "LOGIN");
-            request.put("CARDNUM", fieldCardNum.getText());
-            request.put("PIN", fieldPin.getText());
+            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.LOGIN.toString());
+            request.put(MessageHeaders.CARDNUM, fieldCardNum.getText());
+            request.put(MessageHeaders.PIN, fieldPin.getText());
             
             out.writeObject(request);
             out.flush();
 
-            HashMap<String, String> response = (HashMap<String, String>) in.readObject();
-            System.out.println(response.get("RESPONSE"));
+            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
+            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
 
-            return response.get("RESPONSE").equals("User login successful.");
+            return response.get(MessageHeaders.RESPONSE_CODE).equals(Integer.toString(ResponseStatusCodes.SUCCESS.code));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,6 +61,7 @@ public class ControllerLoginPage extends Controller{
         }
         else{
             //show error
+            System.out.println("login error");
         }
     }
 }

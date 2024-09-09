@@ -6,14 +6,16 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
+import com.bankserver.enumerations.MessageHeaders;
+import com.bankserver.enumerations.ResponseStatusCodes;
 
 public class LoginCommand implements Command{
     private Bank bank = Bank.getBankInstance();
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private HashMap<String, String> request;
+    private HashMap<MessageHeaders, String> request;
 
-    public LoginCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<String, String> request) {
+    public LoginCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request) {
         this.in = in;
         this.out = out;
         this.request = request;
@@ -21,23 +23,23 @@ public class LoginCommand implements Command{
     @Override
     public void execute() {
         try {
-            String cardNum = request.get("CARDNUM");
-            String pin = request.get("PIN");
+            String cardNum = request.get(MessageHeaders.CARDNUM);
+            String pin = request.get(MessageHeaders.PIN);
 
             BankUser user = bank.getBankUser(cardNum);
 
             //create response
-            HashMap<String, String> response = new HashMap<String, String>();
-            response.put("REQUESTTYPE", request.get("REQUESTTYPE"));
+            HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
+            response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
             
             if(user == null) { //check if user exists
-                response.put("RESPONSE", "Invalid card.");
+                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.INVALID_CARD.code));
             }
             else if (user.authenticate(pin)){ //validate pin
-                response.put("RESPONSE", "User login successful.");
+                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
             }
             else{
-                response.put("RESPONSE", "Invalid pin.");
+                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.INVALID_PIN.code));
             }
             out.writeObject(response);
             out.flush();
