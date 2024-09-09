@@ -1,4 +1,4 @@
-package com.nyle.enumerations;
+package com.banksignup.enumerations;
 
 public enum MessageHeaders {
     REQUESTTYPE,

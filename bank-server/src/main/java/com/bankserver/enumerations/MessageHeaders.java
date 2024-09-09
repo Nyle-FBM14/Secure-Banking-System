@@ -7,5 +7,6 @@ public enum MessageHeaders {
     DEPOSITAMOUNT,
     WITHDRAWAMOUNT,
     CARDNUM,
-    PIN;
+    PIN,
+    STARTBALANCE;
 }

@@ -49,7 +49,7 @@ public class AtmHandler extends Thread {
                 Command command = null;
                 request = (HashMap<MessageHeaders, String>) in.readObject();
                 System.out.println(request);
-                switch(request.get("REQUESTTYPE")){
+                switch(request.get(MessageHeaders.REQUESTTYPE)){
                     case "DEPOSIT": //deposit
                         command = new DepositCommand(in, out, request);
                         break;

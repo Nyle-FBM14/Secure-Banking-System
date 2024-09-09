@@ -6,14 +6,16 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
+import com.bankserver.enumerations.MessageHeaders;
+import com.bankserver.enumerations.ResponseStatusCodes;
 
 public class RegisterCommand implements Command{
     private Bank bank = Bank.getBankInstance();
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private HashMap<String, String> request;
+    private HashMap<MessageHeaders, String> request;
 
-    public RegisterCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<String, String> request) {
+    public RegisterCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request) {
         this.in = in;
         this.out = out;
         this.request = request;
@@ -21,18 +23,18 @@ public class RegisterCommand implements Command{
     @Override
     public void execute() {
         try {
-            String cardNum = request.get("CARDNUM");
-            String pin = request.get("PIN");
-            double startingBalance = Double.parseDouble(request.get("STARTBALANCE"));
+            String cardNum = request.get(MessageHeaders.CARDNUM);
+            String pin = request.get(MessageHeaders.PIN);
+            double startingBalance = Double.parseDouble(request.get(MessageHeaders.STARTBALANCE));
             
             BankUser newUser = new BankUser(cardNum, pin, startingBalance);
 
             bank.addClient(newUser);
             
             //create response
-            HashMap<String, String> response = new HashMap<String, String>();
-            response.put("REQUESTTYPE", request.get("REQUESTTYPE"));
-            response.put("RESPONSE", "User registered successfully.");
+            HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
+            response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
+            response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
             out.writeObject(response);
             out.flush();
 

@@ -14,30 +14,46 @@ import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.banksignup.enumerations.MessageHeaders;
+import com.banksignup.enumerations.RequestTypes;
+
 public class RegisterBankUser {
 
     @SuppressWarnings("unchecked")
     public static void registerUser(ObjectInputStream in, ObjectOutputStream out, BufferedReader stdIn){
         try {
-            HashMap<String, String> user = new HashMap<String, String>();
+            HashMap<MessageHeaders, String> user = new HashMap<MessageHeaders, String>();
             System.out.println("Enter account details for new bank user (card number, pin , starting balance):\n");
-            user.put("REQUESTTYPE", "REGISTER");
-            user.put("CARDNUM", stdIn.readLine());
-            user.put("PIN", stdIn.readLine());
-            user.put("STARTBALANCE", stdIn.readLine());
+            user.put(MessageHeaders.REQUESTTYPE, "REGISTER");
+            user.put(MessageHeaders.CARDNUM, stdIn.readLine());
+            user.put(MessageHeaders.PIN, stdIn.readLine());
+            user.put(MessageHeaders.STARTBALANCE, stdIn.readLine());
             //send register request with user data
             out.writeObject(user);
             out.flush();
 
             //response
-            HashMap<String, String> response = (HashMap<String, String>) in.readObject();
-            System.out.println(response.get("REQUESTTYPE"));
-            System.out.println(response.get("RESPONSE"));
+            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
+            System.out.println(response.get(MessageHeaders.REQUESTTYPE));
+            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    @SuppressWarnings("unchecked")
+    private static void terminateConnection(ObjectInputStream in, ObjectOutputStream out) {
+        try {
+            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.END.toString());
+            out.writeObject(request);
+            out.flush();
 
+            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
+            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public static void main(String[] args) {
         String hostName = "localhost";
         int portNumber = 15777;
@@ -66,11 +82,8 @@ public class RegisterBankUser {
                         break;
                     case 1:
                         registeringUsers = false;
-                        HashMap<String, String> request = new HashMap<String, String>();
+                        terminateConnection(in, out);
                         System.out.println("Closing program.");
-                        request.put("REQUESTTYPE", "END");
-                        out.writeObject(request);
-                        out.flush();
                 }
             }
             socket.close();
