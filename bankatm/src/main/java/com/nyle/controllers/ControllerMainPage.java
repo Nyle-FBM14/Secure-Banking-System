@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import com.nyle.ATM;
 import com.nyle.ATMModel;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -50,44 +52,22 @@ public class ControllerMainPage extends Controller {
     @SuppressWarnings("unchecked")
     private String requestCheckBalance() {
         try {
-            HashMap<String, String> request = new HashMap<String, String>();
-            request.put("REQUESTTYPE", "CHECK");
-            request.put("CARDNUM", model.getCardNum());
-            request.put("PIN", model.getPin());
+            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CHECKBALANCE.toString());
+            request.put(MessageHeaders.CARDNUM, model.getCardNum());
+            request.put(MessageHeaders.PIN, model.getPin());
             
             out.writeObject(request);
             out.flush();
 
-            HashMap<String, String> response = (HashMap<String, String>) in.readObject();
-            System.out.println(response.get("RESPONSE"));
+            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
+            System.out.println(response.get(MessageHeaders.RESPONSE));
 
-            return response.get("RESPONSE");
+            return response.get(MessageHeaders.RESPONSE);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private boolean requestWithdraw(String amount) {
-        try {
-            HashMap<String, String> request = new HashMap<String, String>();
-            request.put("REQUESTTYPE", "WITHDRAW");
-            request.put("CARDNUM", model.getCardNum());
-            request.put("PIN", model.getPin());
-            request.put("WITHDRAWAMOUNT", amount);
-
-            out.writeObject(request);
-            out.flush();
-
-            HashMap<String, String> response = (HashMap<String, String>) in.readObject();
-            System.out.println(response.get("RESPONSE"));
-
-            return response.get("RESPONSE").equals("Withdraw successful.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
     @FXML
     void cancel(ActionEvent event) {
@@ -106,6 +86,6 @@ public class ControllerMainPage extends Controller {
 
     @FXML
     void withdraw(ActionEvent event) {
-
+        ATM.setRoot("withdrawPage");
     }
 }
