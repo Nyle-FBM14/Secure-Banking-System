@@ -29,25 +29,20 @@ public class DepositCommand implements Command{
             double depositAmount = Double.parseDouble(request.get(MessageHeaders.DEPOSITAMOUNT));
 
             HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
+            response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
 
             BankUser user = bank.getBankUser(cardNum);
             if(user == null || !(user.authenticate(pin))) { //invalid card or pin
                 System.out.println("Request attempt with invalid credentials.\nCard number: " + cardNum + "\nPin: " + pin);
-                response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
                 response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.ERROR.code));
-                out.writeObject(response);
-                out.flush();
-                return;
             }
-
-            user.deposit(depositAmount);
-            
-            response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
-            response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+            else{
+                user.deposit(depositAmount);
+                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+                System.out.println(String.format("Deposited $&f into account with card number %s", depositAmount, cardNum));
+            }
             out.writeObject(response);
             out.flush();
-
-            System.out.println(String.format("Deposited $&f into account with card number %s", depositAmount, cardNum));
         } catch (Exception e) {
             e.printStackTrace();
         }
