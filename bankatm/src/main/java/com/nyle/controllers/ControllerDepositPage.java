@@ -6,6 +6,9 @@ import java.util.HashMap;
 
 import com.nyle.ATM;
 import com.nyle.ATMModel;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
+import com.nyle.enumerations.ResponseStatusCodes;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,19 +26,19 @@ public class ControllerDepositPage extends Controller {
     @SuppressWarnings("unchecked")
     private boolean requestDeposit(String amount) {
         try {
-            HashMap<String, String> request = new HashMap<String, String>();
-            request.put("REQUESTTYPE", "DEPOSIT");
-            request.put("CARDNUM", model.getCardNum());
-            request.put("PIN", model.getPin());
-            request.put("DEPOSITAMOUNT", amount);
+            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.DEPOSIT.toString());
+            request.put(MessageHeaders.CARDNUM, model.getCardNum());
+            request.put(MessageHeaders.PIN, model.getPin());
+            request.put(MessageHeaders.DEPOSITAMOUNT, amount);
 
             out.writeObject(request);
             out.flush();
 
-            HashMap<String, String> response = (HashMap<String, String>) in.readObject();
-            System.out.println(response.get("RESPONSE"));
+            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
+            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
 
-            return response.get("RESPONSE").equals("Deposit successful.");
+            return response.get(MessageHeaders.RESPONSE_CODE).equals(Integer.toString(ResponseStatusCodes.SUCCESS.code));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,11 +63,11 @@ public class ControllerDepositPage extends Controller {
                 System.out.println("Make another deposit?");
             }
             else{
-                System.out.println("Server error");;
+                System.out.println("Deposit failed");;
             }
         }
         else{
-            System.out.println("Error");
+            System.out.println("Input error");
         }
     }
 }
