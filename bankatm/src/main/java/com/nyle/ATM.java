@@ -70,13 +70,13 @@ public class ATM extends Application {
     @SuppressWarnings("unchecked")
     private static void terminateConnection() {
         try {
-            HashMap<String, String> request = new HashMap<String, String>();
-            request.put("REQUESTTYPE", "END");
+            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.END.toString());
             outputStream.writeObject(request);
             outputStream.flush();
 
-            HashMap<String, String> response = (HashMap<String, String>) inputStream.readObject();
-            System.out.println(response.get("RESPONSE"));
+            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) inputStream.readObject();
+            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
         } catch (Exception e) {
             e.printStackTrace();
         }
