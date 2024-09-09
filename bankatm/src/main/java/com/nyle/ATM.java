@@ -16,6 +16,8 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import com.nyle.controllers.Controller;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
 
 public class ATM extends Application {
 
@@ -79,8 +81,20 @@ public class ATM extends Application {
             e.printStackTrace();
         }
     }
+    @SuppressWarnings("unchecked")
     private static void secureConnection(ObjectInputStream in, ObjectOutputStream out) {
-        System.out.println("hehe");
+        try {
+            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CONNECT.toString());
+
+            out.writeObject(request);
+            out.flush();
+
+            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
+            System.out.println(response.get(MessageHeaders.RESPONSE));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public static void main(String[] args) {
         String hostName = "localhost";

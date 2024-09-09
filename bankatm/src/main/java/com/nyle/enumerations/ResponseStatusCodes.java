@@ -1,4 +1,4 @@
-package com.bankserver.enumerations;
+package com.nyle.enumerations;
 
 public enum ResponseStatusCodes {
     SUCCESS(200),

@@ -16,6 +16,7 @@ import com.bankserver.commands.EndCommand;
 import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
+import com.bankserver.enumerations.MessageHeaders;
 
 import java.math.BigInteger;
 import java.security.spec.X509EncodedKeySpec;
@@ -41,12 +42,12 @@ public class AtmHandler extends Thread {
             )
         {
             boolean atm_online = true;
-            HashMap<String, String> request;
-            HashMap<String, String> response;
+            HashMap<MessageHeaders, String> request;
+            HashMap<MessageHeaders, String> response;
             
             while(atm_online){
                 Command command = null;
-                request = (HashMap<String, String>) in.readObject();
+                request = (HashMap<MessageHeaders, String>) in.readObject();
                 System.out.println(request);
                 switch(request.get("REQUESTTYPE")){
                     case "DEPOSIT": //deposit
