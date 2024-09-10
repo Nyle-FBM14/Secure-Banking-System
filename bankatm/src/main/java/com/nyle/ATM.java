@@ -91,7 +91,7 @@ public class ATM extends Application {
             out.flush();
 
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
-            System.out.println(response.get(MessageHeaders.RESPONSE));
+            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
         } catch (Exception e) {
             e.printStackTrace();
         }

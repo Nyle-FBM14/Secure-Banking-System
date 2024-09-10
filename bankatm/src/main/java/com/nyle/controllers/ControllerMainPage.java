@@ -1,7 +1,5 @@
 package com.nyle.controllers;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
 import com.enumerations.MessageHeaders;
@@ -15,8 +13,6 @@ import javafx.scene.control.Button;
 
 public class ControllerMainPage extends Controller {
     private ATMModel model = ATMModel.getATMModelInstance();
-    private ObjectOutputStream out = this.getOutStream();
-    private ObjectInputStream in = this.getInStream();
     @FXML
     private Button buttonCancel;
 
