@@ -42,7 +42,7 @@ public class ATM extends Application {
         stage.setTitle("Denarii Dispenser");
 
         stage.setOnCloseRequest(event -> {
-            event.consume();
+            //event.consume();
             terminateConnection();
         });
 
