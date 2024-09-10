@@ -1,4 +1,4 @@
-package com.banksignup.enumerations;
+package com.enumerations;
 
 public enum ResponseStatusCodes {
     SUCCESS(200),
@@ -6,7 +6,9 @@ public enum ResponseStatusCodes {
     TIMEOUT(501),
     INVALID_NONCE(502),
     DECRYPTION_ERROR(503),
-    INVALID_MAC(504);
+    INVALID_MAC(504),
+    INVALID_CARD(505),
+    INVALID_PIN(506);
 
     public final int code;
 

@@ -1,4 +1,4 @@
-package com.nyle.enumerations;
+package com.enumerations;
 
 public enum MessageHeaders {
     REQUESTTYPE,

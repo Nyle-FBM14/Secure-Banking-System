@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import com.bankserver.Atm;
 import com.bankserver.Bank;
-import com.bankserver.enumerations.MessageHeaders;
-import com.bankserver.enumerations.ResponseStatusCodes;
+import com.enumerations.MessageHeaders;
+import com.enumerations.ResponseStatusCodes;
 
 public class ConnectCommand implements Command{
     private Bank bank = Bank.getBankInstance();

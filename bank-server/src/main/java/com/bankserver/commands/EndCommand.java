@@ -4,8 +4,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
-import com.bankserver.enumerations.MessageHeaders;
-import com.bankserver.enumerations.ResponseStatusCodes;
+import com.enumerations.MessageHeaders;
+import com.enumerations.ResponseStatusCodes;
 
 public class EndCommand implements Command {
     private ObjectInputStream in;

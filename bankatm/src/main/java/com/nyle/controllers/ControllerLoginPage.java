@@ -1,14 +1,14 @@
 package com.nyle.controllers;
 
 import com.nyle.ATMModel;
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.RequestTypes;
-import com.nyle.enumerations.ResponseStatusCodes;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
+import com.enumerations.MessageHeaders;
+import com.enumerations.RequestTypes;
+import com.enumerations.ResponseStatusCodes;
 import com.nyle.ATM;
 
 import javafx.event.ActionEvent;

@@ -14,8 +14,8 @@ import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.banksignup.enumerations.MessageHeaders;
-import com.banksignup.enumerations.RequestTypes;
+import com.enumerations.MessageHeaders;
+import com.enumerations.RequestTypes;
 
 public class RegisterBankUser {
 

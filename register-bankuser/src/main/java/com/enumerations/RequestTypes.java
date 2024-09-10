@@ -1,4 +1,4 @@
-package com.bankserver.enumerations;
+package com.enumerations;
 
 public enum RequestTypes {
     CONNECT,

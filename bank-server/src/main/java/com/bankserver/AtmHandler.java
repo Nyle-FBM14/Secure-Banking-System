@@ -16,7 +16,7 @@ import com.bankserver.commands.EndCommand;
 import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
-import com.bankserver.enumerations.MessageHeaders;
+import com.enumerations.MessageHeaders;
 
 import java.math.BigInteger;
 import java.security.spec.X509EncodedKeySpec;
