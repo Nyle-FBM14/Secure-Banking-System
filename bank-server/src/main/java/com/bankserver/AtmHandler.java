@@ -48,7 +48,7 @@ public class AtmHandler extends Thread {
             while(atm_online){
                 Command command = null;
                 request = (HashMap<MessageHeaders, String>) in.readObject();
-                System.out.println("Command received: " + request.get(MessageHeaders.REQUESTTYPE));
+                System.out.println("\n****************Command received: " + request.get(MessageHeaders.REQUESTTYPE));
                 switch(request.get(MessageHeaders.REQUESTTYPE)){
                     case "DEPOSIT": //deposit
                         command = new DepositCommand(in, out, request);
@@ -56,7 +56,7 @@ public class AtmHandler extends Thread {
                     case "WITHDRAW": //withdraw
                         command = new WithdrawCommand(in, out, request);
                         break;
-                    case "CHECK": //check balanace
+                    case "CHECKBALANCE": //check balanace
                         command = new CheckBalanceCommand(in, out, request);
                         break;
                     case "CONNECT": //new atm connection
@@ -82,9 +82,9 @@ public class AtmHandler extends Thread {
                 if (command != null) {
                     System.out.println("Executing command...");
                     command.execute();
-                    System.out.println("Waiting for next request...");
+                    System.out.println("Waiting for next request...\n****************\n");
                 }
-                bank.printBankData();
+                //bank.printBankData();
             } //end of while loop
             
             socket.close();

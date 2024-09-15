@@ -23,7 +23,8 @@ public class RegisterBankUser {
     public static void registerUser(ObjectInputStream in, ObjectOutputStream out, BufferedReader stdIn){
         try {
             HashMap<MessageHeaders, String> user = new HashMap<MessageHeaders, String>();
-            System.out.println("Enter account details for new bank user (card number, pin , starting balance):\n");
+            System.out.println("\n****************");
+            System.out.println("Enter account details for new bank user (card number, pin , starting balance):");
             user.put(MessageHeaders.REQUESTTYPE, "REGISTER");
             user.put(MessageHeaders.CARDNUM, stdIn.readLine());
             user.put(MessageHeaders.PIN, stdIn.readLine());
@@ -36,6 +37,7 @@ public class RegisterBankUser {
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
             System.out.println(response.get(MessageHeaders.REQUESTTYPE));
             System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
+            System.out.println("****************\n");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -86,6 +86,7 @@ public class ATM extends Application {
         try {
             HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
             request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CONNECT.toString());
+            request.put(MessageHeaders.ID, id);
 
             out.writeObject(request);
             out.flush();

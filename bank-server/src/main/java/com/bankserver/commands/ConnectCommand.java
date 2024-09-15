@@ -24,7 +24,7 @@ public class ConnectCommand implements Command{
     @Override
     public void execute(){
         try {
-            String id = request.get(MessageHeaders.REQUESTTYPE);
+            String id = request.get(MessageHeaders.ID);
             Atm atm = new Atm(id);
             bank.addATM(atm);
 

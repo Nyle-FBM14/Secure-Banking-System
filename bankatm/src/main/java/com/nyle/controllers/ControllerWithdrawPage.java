@@ -54,6 +54,16 @@ public class ControllerWithdrawPage extends Controller {
 
     @FXML
     void confirmWithdraw(ActionEvent event) {
-
+        if(model.checkAmount(fieldWithdrawAmount.getText())){
+            if(requestWithdraw(fieldWithdrawAmount.getText())){
+                System.out.println("Make another withdrawal?");
+            }
+            else{
+                System.out.println("Withdraw failed");;
+            }
+        }
+        else{
+            System.out.println("Input error");
+        }
     }
 }

@@ -10,8 +10,6 @@ public class Controller {
     public void setStreams(ObjectInputStream in, ObjectOutputStream out) {
         this.in = in;
         this.out = out;
-        System.out.println(in);
-        System.out.println(out);
     }
     public ObjectInputStream getInStream() {
         return in;

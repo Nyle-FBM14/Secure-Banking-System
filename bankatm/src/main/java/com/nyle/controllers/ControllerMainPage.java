@@ -28,18 +28,18 @@ public class ControllerMainPage extends Controller {
     @SuppressWarnings("unchecked")
     private boolean requestLogout() {
         try {
-            HashMap<String, String> request = new HashMap<String, String>();
-            request.put("REQUESTTYPE", "LOGOUT");
-            request.put("CARDNUM", model.getCardNum());
-            request.put("PIN", model.getPin());
+            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.LOGOUT.toString());
+            request.put(MessageHeaders.CARDNUM, model.getCardNum());
+            request.put(MessageHeaders.PIN, model.getPin());
             
             out.writeObject(request);
             out.flush();
 
-            HashMap<String, String> response = (HashMap<String, String>) in.readObject();
-            System.out.println(response.get("RESPONSE"));
+            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
+            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
 
-            return response.get("RESPONSE").equals("Logout successful.");
+            return response.get(MessageHeaders.RESPONSE_CODE).equals("200");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,7 +57,7 @@ public class ControllerMainPage extends Controller {
             out.flush();
 
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
-            System.out.println(response.get(MessageHeaders.RESPONSE));
+            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
 
             return response.get(MessageHeaders.RESPONSE);
         } catch (Exception e) {
@@ -67,6 +67,10 @@ public class ControllerMainPage extends Controller {
     }
     @FXML
     void cancel(ActionEvent event) {
+        /*
+        if(requestLogout()){
+            ATM.setRoot("login");
+        } //*/
         ATM.setRoot("login");
     }
 
