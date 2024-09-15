@@ -48,7 +48,7 @@ public class AtmHandler extends Thread {
             while(atm_online){
                 Command command = null;
                 request = (HashMap<MessageHeaders, String>) in.readObject();
-                System.out.println(request);
+                System.out.println("Command received: " + request.get(MessageHeaders.REQUESTTYPE));
                 switch(request.get(MessageHeaders.REQUESTTYPE)){
                     case "DEPOSIT": //deposit
                         command = new DepositCommand(in, out, request);
@@ -76,7 +76,7 @@ public class AtmHandler extends Thread {
                         atm_online = false;
                         break;
                     default:
-                        System.out.println("Eh");
+                        System.out.println("ATM Handler default");
                 }
 
                 if (command != null) {

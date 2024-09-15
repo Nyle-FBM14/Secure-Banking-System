@@ -1,0 +1,35 @@
+.background {
+    -fx-background-color: green;
+    background-color: green;
+}
+
+.button {
+    -fx-border-width: 2px;
+    -fx-border-style: solid;
+    -fx-border-color: white;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 7px;
+    -fx-background-color: #28D128;
+
+    border-width: 2px;
+    border-style: solid;
+    border-color: white;
+    border-radius: 5px;
+    background-color: #28D128;
+}
+.button:hover {
+    -fx-background-color: green;
+    background-color: green;
+}
+
+#loginVbox {
+    -fx-border-width: 2px;
+    -fx-border-style: solid;
+    -fx-border-color: white;
+    -fx-border-radius: 10px;
+
+    border-width: 2px;
+    border-style: solid;
+    border-color: white;
+    border-radius: 10px;
+}

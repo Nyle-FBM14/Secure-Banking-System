@@ -37,13 +37,13 @@ public class LoginCommand implements Command{
             }
             else if (user.authenticate(pin)){ //validate pin
                 response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+                System.out.println("Validated user with card num: " + cardNum);
             }
             else{
                 response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.INVALID_PIN.code));
             }
             out.writeObject(response);
             out.flush();
-            System.out.println("Validated user with card num: " + cardNum);
         } catch (Exception e) {
             e.printStackTrace();
         }
