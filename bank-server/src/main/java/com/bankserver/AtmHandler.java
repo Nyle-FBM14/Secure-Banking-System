@@ -2,11 +2,19 @@ package com.bankserver;
 
 import java.net.*;
 import java.io.*;
+/*
 import java.security.*;
 import java.security.spec.KeySpec;
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.math.BigInteger;
+import java.security.spec.X509EncodedKeySpec;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import javax.crypto.spec.DHParameterSpec; */
+import java.util.HashMap;
+
 
 import com.bankserver.commands.CheckBalanceCommand;
 import com.bankserver.commands.Command;
@@ -17,13 +25,6 @@ import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
 import com.enumerations.MessageHeaders;
-
-import java.math.BigInteger;
-import java.security.spec.X509EncodedKeySpec;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import javax.crypto.spec.DHParameterSpec;
-import java.util.HashMap;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;
@@ -43,7 +44,7 @@ public class AtmHandler extends Thread {
         {
             boolean atm_online = true;
             HashMap<MessageHeaders, String> request;
-            HashMap<MessageHeaders, String> response;
+            //HashMap<MessageHeaders, String> response;
             
             while(atm_online){
                 Command command = null;
@@ -74,6 +75,7 @@ public class AtmHandler extends Thread {
                     case "END": //atm or program that registers users terminates their connection
                         command = new EndCommand(in, out, request);
                         atm_online = false;
+                        bank.printBankData();
                         break;
                     default:
                         System.out.println("ATM Handler default");
@@ -84,7 +86,6 @@ public class AtmHandler extends Thread {
                     command.execute();
                     System.out.println("Waiting for next request...\n****************\n");
                 }
-                //bank.printBankData();
             } //end of while loop
             
             socket.close();

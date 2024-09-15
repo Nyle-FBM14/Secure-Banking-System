@@ -11,6 +11,7 @@ import com.enumerations.ResponseStatusCodes;
 
 public class ConnectCommand implements Command{
     private Bank bank = Bank.getBankInstance();
+    @SuppressWarnings("unused")
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private HashMap<MessageHeaders, String> request;

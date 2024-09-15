@@ -25,9 +25,10 @@ public class ControllerMainPage extends Controller {
     @FXML
     private Button buttonWithdraw;
 
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     private boolean requestLogout() {
         try {
+            /*
             HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
             request.put(MessageHeaders.REQUESTTYPE, RequestTypes.LOGOUT.toString());
             request.put(MessageHeaders.CARDNUM, model.getCardNum());
@@ -39,7 +40,8 @@ public class ControllerMainPage extends Controller {
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
             System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
 
-            return response.get(MessageHeaders.RESPONSE_CODE).equals("200");
+            return response.get(MessageHeaders.RESPONSE_CODE).equals("200"); */
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,11 +69,9 @@ public class ControllerMainPage extends Controller {
     }
     @FXML
     void cancel(ActionEvent event) {
-        /*
         if(requestLogout()){
             ATM.setRoot("login");
-        } //*/
-        ATM.setRoot("login");
+        } 
     }
 
     @FXML

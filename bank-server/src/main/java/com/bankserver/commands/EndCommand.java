@@ -8,6 +8,7 @@ import com.enumerations.MessageHeaders;
 import com.enumerations.ResponseStatusCodes;
 
 public class EndCommand implements Command {
+    @SuppressWarnings("unused")
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private HashMap<MessageHeaders, String> request;

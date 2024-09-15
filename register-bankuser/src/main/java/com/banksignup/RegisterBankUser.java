@@ -2,17 +2,7 @@ package com.banksignup;
 
 import java.io.*;
 import java.net.*;
-import java.security.*;
-import java.security.spec.KeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import javax.crypto.*;
 import java.util.HashMap;
-
-import java.util.Scanner;
-import javax.crypto.spec.DHParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import com.enumerations.MessageHeaders;
 import com.enumerations.RequestTypes;
