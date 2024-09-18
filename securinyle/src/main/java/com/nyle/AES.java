@@ -8,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.security.MessageDigest;
 import java.util.Base64;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -86,7 +85,7 @@ public class AES {
         return null;
     }
 
-    
+
     public String encryptString(String message, SecretKey key) {
         try{
             Cipher cipher = Cipher.getInstance("AES");
