@@ -1,33 +1,68 @@
 package com.nyle;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.security.Key;
+import java.util.Base64;
 
+import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 
 public class SecurityUtils {
-    private byte[] serialize(Object object) {
+
+    /*
+     * SunPKCS11 algorithms
+     * RSA/ECB/PKCS1Padding
+     * AES/CBC/PKCS5Padding
+     */
+    /*
+     * Note to self: ByteArrayOutputStream writes data into a byte array
+     * ObjectOutputStream serializes an object into a stream of bytes
+     * It writes into ByteArrayOutputStream
+     * ByteArrayOutputStream calls toByteArray() to return byte array
+     */
+    public byte[] encrypt(Object message, Key key, String instance) {
+        try{
+            Cipher cipher = Cipher.getInstance(instance);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return cipher.doFinal(Utils.serialize(message));
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /*
+     * Note to self: ByteArrayInputStream takes a byte array and turns it into stream
+     * ObjectInputStream reads from that stream and deserializes it
+     */
+    public Object decrypt(byte[] encryptedMessage, Key key, String instance) {
         try {
-            ByteArrayOutputStream byteArrMaker = new ByteArrayOutputStream();
-            ObjectOutputStream serializer = new ObjectOutputStream(byteArrMaker);
-            serializer.writeObject(object);
-            serializer.flush();
-            return byteArrMaker.toByteArray();
+            Cipher cipher = Cipher.getInstance(instance);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            return Utils.deserialize(cipher.doFinal(encryptedMessage));
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-    @SuppressWarnings("unused")
-    private Object deserialize(byte[] buffer) {
-        try {
-            ByteArrayInputStream arrayToStream = new ByteArrayInputStream(buffer);
-            ObjectInputStream deserializer = new ObjectInputStream(arrayToStream);
-            return deserializer.readObject();
-        } catch (Exception e) {
+
+    public String encryptString(String message, SecretKey key, String instance) {
+        try{
+            Cipher cipher = Cipher.getInstance(instance);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] encryptedBytes = cipher.doFinal(message.getBytes());
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public String decryptString(String encryptedMessage, SecretKey key, String instance) {
+        try{
+            Cipher cipher = Cipher.getInstance(instance);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedMessage));
+            return new String(decryptedBytes);
+        } catch(Exception e){
             e.printStackTrace();
         }
         return null;
@@ -37,7 +72,7 @@ public class SecurityUtils {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(macKey);
-            byte[] macBytes = mac.doFinal(serialize(message));
+            byte[] macBytes = mac.doFinal(Utils.serialize(message));
             return macBytes;
             //return Base64.getEncoder().encodeToString(macBytes); //for String - import java.util.Base64;
         } catch (Exception e) {
