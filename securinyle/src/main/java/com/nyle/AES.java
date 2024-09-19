@@ -1,6 +1,5 @@
 package com.nyle;
 
-import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
@@ -20,9 +19,6 @@ public class AES {
         return null;
     }
 
-    public String keyToString(SecretKey key) {
-        return Base64.getEncoder().encodeToString(key.getEncoded());
-    }
     public SecretKey stringToKey(String key) {
         byte[] decodedKey = Base64.getDecoder().decode(key);
         return new SecretKeySpec(decodedKey, "AES");

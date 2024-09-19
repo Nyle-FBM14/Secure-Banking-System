@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Base64;
+
+import javax.crypto.SecretKey;
 
 public class Utils {
     public static byte[] serialize(Object object) {
@@ -27,5 +30,9 @@ public class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String keyToString(SecretKey key) {
+        return Base64.getEncoder().encodeToString(key.getEncoded());
     }
 }

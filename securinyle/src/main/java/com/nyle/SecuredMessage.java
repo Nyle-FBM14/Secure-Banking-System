@@ -6,18 +6,18 @@ import com.nyle.enumerations.MessageHeaders;
 
 public class SecuredMessage {
     private HashMap<MessageHeaders, String> message;
-    private byte[] macString;
+    private byte[] mac;
     
-    public SecuredMessage(HashMap<MessageHeaders, String> message, byte[] macString) {
+    public SecuredMessage(HashMap<MessageHeaders, String> message, byte[] mac) {
         this.message = message;
-        this.macString = macString;
+        this.mac = mac;
     }
 
     public HashMap<MessageHeaders, String> getMessage() {
         return message;
     }
 
-    public byte[] getMacString() {
-        return macString;
+    public byte[] getMac() {
+        return mac;
     }
 }

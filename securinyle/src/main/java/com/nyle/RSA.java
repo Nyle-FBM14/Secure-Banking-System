@@ -1,10 +1,13 @@
 package com.nyle;
 
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 
@@ -77,5 +80,15 @@ public class RSA {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public PublicKey stringToPublicKey(String key){
+        try{
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(key)));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
