@@ -1,23 +1,27 @@
 package com.nyle;
 
-import java.util.HashMap;
+import java.io.Serializable;
 
-import com.nyle.enumerations.MessageHeaders;
-
-public class SecuredMessage {
-    private HashMap<MessageHeaders, String> message;
+public class SecuredMessage implements Serializable {
+    private byte[] message;
     private byte[] mac;
+    private byte[] signature;
     
-    public SecuredMessage(HashMap<MessageHeaders, String> message, byte[] mac) {
+    public SecuredMessage(byte[] message, byte[] mac, byte[] signature) {
         this.message = message;
         this.mac = mac;
+        this.signature = signature;
     }
 
-    public HashMap<MessageHeaders, String> getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 
     public byte[] getMac() {
         return mac;
+    }
+
+    public byte[] getSignature() {
+        return signature;
     }
 }

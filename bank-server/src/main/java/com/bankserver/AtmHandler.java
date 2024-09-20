@@ -57,10 +57,10 @@ public class AtmHandler extends Thread {
                     case "WITHDRAW": //withdraw
                         command = new WithdrawCommand(in, out, request);
                         break;
-                    case "CHECKBALANCE": //check balanace
+                    case "CHECK_BALANCE": //check balanace
                         command = new CheckBalanceCommand(in, out, request);
                         break;
-                    case "CONNECT": //new atm connection
+                    case "SECURE_CONNECTION": //new atm connection
                         command = new ConnectCommand(in, out, request);
                         break;
                     case "LOGIN": //client login

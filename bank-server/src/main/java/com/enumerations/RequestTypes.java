@@ -1,11 +1,11 @@
 package com.enumerations;
 
 public enum RequestTypes {
-    CONNECT,
+    SECURE_CONNECTION,
     LOGIN,
     DEPOSIT,
     WITHDRAW,
-    CHECKBALANCE,
+    CHECK_BALANCE,
     LOGOUT,
     END
 }

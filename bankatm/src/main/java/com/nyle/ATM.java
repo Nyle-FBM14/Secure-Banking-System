@@ -85,7 +85,7 @@ public class ATM extends Application {
     private static void secureConnection(ObjectInputStream in, ObjectOutputStream out) {
         try {
             HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CONNECT.toString());
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.SECURE_CONNECTION.toString());
             request.put(MessageHeaders.ID, id);
 
             out.writeObject(request);

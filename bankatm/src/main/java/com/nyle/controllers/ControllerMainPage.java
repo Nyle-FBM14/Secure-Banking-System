@@ -51,7 +51,7 @@ public class ControllerMainPage extends Controller {
     private String requestCheckBalance() {
         try {
             HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CHECKBALANCE.toString());
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CHECK_BALANCE.toString());
             request.put(MessageHeaders.CARDNUM, model.getCardNum());
             request.put(MessageHeaders.PIN, model.getPin());
             

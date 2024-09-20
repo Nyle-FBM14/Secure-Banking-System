@@ -10,9 +10,9 @@ public enum ResponseStatusCodes {
     INVALID_CARD(505),
     INVALID_PIN(506);
 
-    public final int code;
+    public final int CODE;
 
-    ResponseStatusCodes(int code){
-        this.code = code;
+    ResponseStatusCodes(int CODE){
+        this.CODE = CODE;
     }
 }
