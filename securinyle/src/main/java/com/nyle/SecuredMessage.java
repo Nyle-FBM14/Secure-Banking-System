@@ -4,24 +4,16 @@ import java.io.Serializable;
 
 public class SecuredMessage implements Serializable {
     private byte[] message;
-    private byte[] mac;
-    private byte[] signature;
+    private byte[] messageIntegrityAuthentication; //mac or digital signature
     
-    public SecuredMessage(byte[] message, byte[] mac, byte[] signature) {
+    public SecuredMessage(byte[] message, byte[] messageIntegrityAuthentication) {
         this.message = message;
-        this.mac = mac;
-        this.signature = signature;
+        this.messageIntegrityAuthentication = messageIntegrityAuthentication;
     }
-
     public byte[] getMessage() {
         return message;
     }
-
-    public byte[] getMac() {
-        return mac;
-    }
-
-    public byte[] getSignature() {
-        return signature;
+    public byte[] getMessageIntegrityAuthentication() {
+        return messageIntegrityAuthentication;
     }
 }

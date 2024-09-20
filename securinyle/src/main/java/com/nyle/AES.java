@@ -6,12 +6,14 @@ import javax.crypto.SecretKey;
 import java.util.Base64;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.nyle.enumerations.KeySizes;
+
 public class AES {
     
-    public SecretKey generateKey() {
+    public static SecretKey generateKey() {
         try{
             KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-            keyGen.init(256);
+            keyGen.init(KeySizes.AES.SIZE);
             return keyGen.generateKey();
         } catch (Exception e) {
             e.printStackTrace();
@@ -19,7 +21,7 @@ public class AES {
         return null;
     }
 
-    public SecretKey stringToKey(String key) {
+    public static SecretKey stringToKey(String key) {
         byte[] decodedKey = Base64.getDecoder().decode(key);
         return new SecretKeySpec(decodedKey, "AES");
     }

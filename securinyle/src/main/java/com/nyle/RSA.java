@@ -11,11 +11,14 @@ import java.util.Base64;
 
 import javax.crypto.Cipher;
 
+import com.nyle.enumerations.Algorithms;
+import com.nyle.enumerations.KeySizes;
+
 public class RSA {
-    public KeyPair generateRSAkeypair() {
+    public static KeyPair generateRSAkeypair() {
         try{
             KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
-            keygen.initialize(2048);
+            keygen.initialize(KeySizes.RSA_KEYGEN.SIZE);
             KeyPair keypair = keygen.generateKeyPair();
             return keypair;
         }catch (Exception e){
@@ -24,9 +27,9 @@ public class RSA {
         return null;
     }
 
-    public byte[] doubleEncrypt(PrivateKey pr, PublicKey pu, Object message) {
+    public static byte[] doubleEncrypt(PrivateKey pr, PublicKey pu, Object message) {
         try {
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipher = Cipher.getInstance(Algorithms.RSA.INSTANCE);
 
             //encrypt with private key
             cipher.init(Cipher.ENCRYPT_MODE, pr);
@@ -41,9 +44,9 @@ public class RSA {
         }
         return null;
     }
-    public Object doubleDecrypt(PrivateKey pr, PublicKey pu, Object encryptedMessage) {
+    public static Object doubleDecrypt(PrivateKey pr, PublicKey pu, Object encryptedMessage) {
         try {
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            Cipher cipher = Cipher.getInstance(Algorithms.RSA.INSTANCE);
 
             //decrypt with private key
             cipher.init(Cipher.DECRYPT_MODE, pu);
@@ -59,9 +62,9 @@ public class RSA {
         return null;
     }
 
-    public byte[] signDigitalSignature(PrivateKey key, Object message) {
+    public static byte[] signDigitalSignature(PrivateKey key, Object message) {
         try {
-            Signature sig = Signature.getInstance("SHA256withRSA");
+            Signature sig = Signature.getInstance(Algorithms.RSA_SIGNATURE.INSTANCE);
             sig.initSign(key);
             sig.update(Utils.serialize(message));
             return sig.sign();
@@ -70,9 +73,9 @@ public class RSA {
         }
         return null;
     }
-    public boolean verifyDigitalSignature(PublicKey key, Object message, byte[] receivedSig) {
+    public static boolean verifyDigitalSignature(PublicKey key, Object message, byte[] receivedSig) {
         try {
-            Signature sig = Signature.getInstance("SHA256withRSA");
+            Signature sig = Signature.getInstance(Algorithms.RSA_SIGNATURE.INSTANCE);
             sig.initVerify(key);
             sig.update(Utils.serialize(message));
             return sig.verify(receivedSig);
@@ -82,7 +85,7 @@ public class RSA {
         return false;
     }
 
-    public PublicKey stringToPublicKey(String key){
+    public static PublicKey stringToPublicKey(String key){
         try{
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(key)));

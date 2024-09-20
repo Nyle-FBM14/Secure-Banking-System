@@ -14,15 +14,12 @@ import com.nyle.enumerations.RequestTypes;
 public class Main {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
-        AES aes =  new AES();
-        RSA rsa = new RSA();
-        SecurityUtils sec = new SecurityUtils();
 
-        SecretKey key = aes.generateKey();
-        KeyPair keypairA = rsa.generateRSAkeypair();
+        SecretKey key = AES.generateKey();
+        KeyPair keypairA = RSA.generateRSAkeypair();
         PublicKey puA = keypairA.getPublic();
         PrivateKey prA = keypairA.getPrivate();
-        KeyPair keypairB = rsa.generateRSAkeypair();
+        KeyPair keypairB = RSA.generateRSAkeypair();
         PublicKey puB = keypairB.getPublic();
         PrivateKey prB = keypairB.getPrivate();
 
@@ -37,22 +34,22 @@ public class Main {
         System.out.println(Utils.serialize(mssg).length);
 
         System.out.println("\nAES Encryption");
-        encryptedMssg = sec.encrypt(mssg, key, "AES");
+        encryptedMssg = SecurityUtils.encrypt(mssg, key, "AES");
         System.out.println(Arrays.toString(encryptedMssg));
 
         System.out.println("\nAES Decryption");
-        decryptedMssg = (HashMap<MessageHeaders, String>) sec.decrypt(encryptedMssg, key, "AES");
+        decryptedMssg = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(encryptedMssg, key, "AES");
         System.out.println(decryptedMssg);
 
         System.out.println("\nSign Digital Sig");
-        byte[] sig = rsa.signDigitalSignature(prA, mssg);
-        encryptedMssg = sec.encrypt(mssg, puB, "RSA/ECB/PKCS1Padding");
-        SecuredMessage sm = new SecuredMessage(encryptedMssg, null, sig);
+        byte[] sig = RSA.signDigitalSignature(prA, mssg);
+        encryptedMssg = SecurityUtils.encrypt(mssg, puB, "RSA/ECB/PKCS1Padding");
+        SecuredMessage sm = new SecuredMessage(encryptedMssg, sig);
 
         System.out.println("\nVerify Digital Sig");
-        decryptedMssg = (HashMap<MessageHeaders, String>) sec.decrypt(sm.getMessage(), prB, "RSA/ECB/PKCS1Padding");
+        decryptedMssg = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(sm.getMessage(), prB, "RSA/ECB/PKCS1Padding");
         System.out.println(decryptedMssg);
-        if(rsa.verifyDigitalSignature(puA, decryptedMssg, sm.getSignature()))
+        if(RSA.verifyDigitalSignature(puA, decryptedMssg, sm.getMessageIntegrityAuthentication()))
             System.out.println("Valid signature");
         else
             System.out.println("Invalid signature");

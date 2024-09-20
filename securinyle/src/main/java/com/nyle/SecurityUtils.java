@@ -7,20 +7,16 @@ import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 
-public class SecurityUtils {
+import com.nyle.enumerations.Algorithms;
 
-    /*
-     * SunPKCS11 algorithms
-     * RSA/ECB/PKCS1Padding
-     * AES/CBC/PKCS5Padding
-     */
+public class SecurityUtils {
     /*
      * Note to self: ByteArrayOutputStream writes data into a byte array
      * ObjectOutputStream serializes an object into a stream of bytes
      * It writes into ByteArrayOutputStream
      * ByteArrayOutputStream calls toByteArray() to return byte array
      */
-    public byte[] encrypt(Object message, Key key, String instance) {
+    public static byte[] encrypt(Object message, Key key, String instance) {
         try{
             Cipher cipher = Cipher.getInstance(instance);
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -34,7 +30,7 @@ public class SecurityUtils {
      * Note to self: ByteArrayInputStream takes a byte array and turns it into stream
      * ObjectInputStream reads from that stream and deserializes it
      */
-    public Object decrypt(byte[] encryptedMessage, Key key, String instance) {
+    public static Object decrypt(byte[] encryptedMessage, Key key, String instance) {
         try {
             Cipher cipher = Cipher.getInstance(instance);
             cipher.init(Cipher.DECRYPT_MODE, key);
@@ -45,7 +41,7 @@ public class SecurityUtils {
         return null;
     }
 
-    public String encryptString(String message, SecretKey key, String instance) {
+    public static String encryptString(String message, SecretKey key, String instance) {
         try{
             Cipher cipher = Cipher.getInstance(instance);
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -56,7 +52,7 @@ public class SecurityUtils {
         }
         return null;
     }
-    public String decryptString(String encryptedMessage, SecretKey key, String instance) {
+    public static String decryptString(String encryptedMessage, SecretKey key, String instance) {
         try{
             Cipher cipher = Cipher.getInstance(instance);
             cipher.init(Cipher.DECRYPT_MODE, key);
@@ -68,9 +64,9 @@ public class SecurityUtils {
         return null;
     }
 
-    public byte[] makeMac(Object message, SecretKey macKey) {
+    public static byte[] makeMac(Object message, SecretKey macKey) {
         try {
-            Mac mac = Mac.getInstance("HmacSHA256");
+            Mac mac = Mac.getInstance(Algorithms.MAC_HASH.INSTANCE);
             mac.init(macKey);
             byte[] macBytes = mac.doFinal(Utils.serialize(message));
             return macBytes;
@@ -81,7 +77,7 @@ public class SecurityUtils {
         return null;
     }
 
-    public boolean verifyMac(Object message, byte[] receivedMac, SecretKey macKey) {
+    public static boolean verifyMac(Object message, byte[] receivedMac, SecretKey macKey) {
         byte[] generatedMac = makeMac(message, macKey);
         return generatedMac.equals(receivedMac);
     }

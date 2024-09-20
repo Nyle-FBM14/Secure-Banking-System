@@ -36,11 +36,11 @@ public class Utils {
         return null;
     }
 
-    public String keyToString(SecretKey key) {
+    public static String keyToString(SecretKey key) {
         return Base64.getEncoder().encodeToString(key.getEncoded());
     }
 
-    public BigInteger getLargePrime() {
+    public static BigInteger getLargePrime() {
         SecureRandom randNum = new SecureRandom();
         return BigInteger.probablePrime(KeySizes.DH_PRIME.SIZE, randNum);
     }
