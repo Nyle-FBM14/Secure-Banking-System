@@ -44,4 +44,8 @@ public class Utils {
         SecureRandom randNum = new SecureRandom();
         return BigInteger.probablePrime(KeySizes.DH_PRIME.SIZE, randNum);
     }
+    public static byte[] getSalt() {
+        SecureRandom rand = new SecureRandom();
+        return rand.generateSeed(16);
+    }
 }
