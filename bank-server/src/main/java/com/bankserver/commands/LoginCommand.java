@@ -34,14 +34,14 @@ public class LoginCommand implements Command{
             response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
             
             if(user == null) { //check if user exists
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.INVALID_CARD.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.INVALID_CARD.code));
             }
             else if (user.authenticate(pin)){ //validate pin
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
                 System.out.println("Validated user with card num: " + cardNum);
             }
             else{
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.INVALID_PIN.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.INVALID_PIN.code));
             }
             out.writeObject(response);
             out.flush();

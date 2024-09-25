@@ -33,11 +33,11 @@ public class CheckBalanceCommand implements Command {
             BankUser user = bank.getBankUser(cardNum);
             if(user == null || !(user.authenticate(pin))) { //invalid card or pin
                 System.out.println("Request attempt with invalid credentials.\nCard number: " + cardNum + "\nPin: " + pin);
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.ERROR.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.ERROR.code));
             }
             else{
                 double balance = user.checkBalance();
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
                 response.put(MessageHeaders.RESPONSE, Double.toString(balance));
                 System.out.println(String.format("Balance of account with card number %s is $%f.", cardNum, balance));
             }

@@ -23,7 +23,7 @@ public class EndCommand implements Command {
         try {
             HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
             response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
-            response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+            response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
             out.writeObject(response);
             out.flush();
         } catch (Exception e) {

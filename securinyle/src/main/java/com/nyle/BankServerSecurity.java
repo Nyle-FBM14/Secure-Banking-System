@@ -25,7 +25,7 @@ public class BankServerSecurity {
     private SecretKey macKey;
     private PrivateKey privateKey;
     private PublicKey publicKey;
-    private PublicKey publicKeyATM;
+    private PublicKey publicKeyReceiver; //make setter
 
     public BankServerSecurity() {
         KeyPair keypair = RSA.generateRSAkeypair();
@@ -33,15 +33,15 @@ public class BankServerSecurity {
         publicKey = keypair.getPublic();
     }
 
-    public SecuredMessage GenerateDHPrimeMessage() {
-        byte[] prime = Utils.serialize(Utils.getLargePrime());
+    public SecuredMessage GenerateDHPrimeMessage() { //maybe generalize A
+        BigInteger prime = Utils.getLargePrime();
         byte[] signedPrime = RSA.signDigitalSignature(privateKey, prime);
-        return new SecuredMessage(prime, signedPrime);
+        return new SecuredMessage(Utils.serialize(prime), signedPrime);
     }
     public KeyPair generateDHKeyPair(SecuredMessage dhPrime, byte[] myPrime) {
-        if(RSA.verifyDigitalSignature(publicKeyATM, dhPrime.getMessage(), dhPrime.getMessageIntegrityAuthentication())) {
-            BigInteger p1 = (BigInteger) Utils.deserialize(myPrime);
-            BigInteger p2 = (BigInteger) Utils.deserialize(dhPrime.getMessage());
+        BigInteger p1 = (BigInteger) Utils.deserialize(dhPrime.getMessage());
+        if(RSA.verifyDigitalSignature(publicKeyReceiver, p1, dhPrime.getMessageIntegrityAuthentication())) {
+            BigInteger p2 = (BigInteger) Utils.deserialize(myPrime);
             DHParameterSpec dhSpecs = new DHParameterSpec(p1, p2, KeySizes.DH_PRIME.SIZE);
             try {
                 KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
@@ -53,55 +53,98 @@ public class BankServerSecurity {
         }
         return null;
     }
-    public SecuredMessage GenerateDHPublicKeyMessage(PublicKey key) {
+    public SecuredMessage GenerateDHPublicKeyMessage(PublicKey key) { //maybe generalize A
         byte[] signedKey = RSA.signDigitalSignature(privateKey, key);
         return new SecuredMessage(Utils.serialize(key), signedKey);
     }
-    public SecretKey generateMasterKey(SecuredMessage atmPubKey, PrivateKey prKey) {
-        if(RSA.verifyDigitalSignature(publicKeyATM, atmPubKey.getMessage(), atmPubKey.getMessageIntegrityAuthentication())){
+    public void generateMasterKey(SecuredMessage senderDHPubKey, PrivateKey prKey) {
+        PublicKey senderDHPublicKey = (PublicKey) Utils.deserialize(senderDHPubKey.getMessage());
+        if(RSA.verifyDigitalSignature(publicKeyReceiver, senderDHPublicKey, senderDHPubKey.getMessageIntegrityAuthentication())){
             try {
-                PublicKey atmKey = (PublicKey) Utils.deserialize(atmPubKey.getMessage());
                 KeyAgreement keyAgree = KeyAgreement.getInstance("DH");
                 keyAgree.init(prKey);
-                keyAgree.doPhase(atmKey, true);
+                keyAgree.doPhase(senderDHPublicKey, true);
                 masterKey = keyAgree.generateSecret(Algorithms.AES.INSTANCE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return masterKey;
+    }
+
+    public SecuredMessage generateCredentialsMessage(HashMap<MessageHeaders, String> credentials) { //unique to atm
+        byte[] encryptedMessage = SecurityUtils.encrypt(credentials, masterKey, Algorithms.AES.INSTANCE);
+        byte[] mac = SecurityUtils.makeMac(credentials, masterKey);
+        return new SecuredMessage(encryptedMessage, mac);
     }
     @SuppressWarnings("unchecked")
-    public SecretKey generateMasterSessionKey(SecuredMessage credentials) {
-        HashMap<MessageHeaders, String> message = (HashMap<MessageHeaders, String>) Utils.deserialize(credentials.getMessage());
-        String base = message.get(MessageHeaders.CARDNUM) + message.get(MessageHeaders.PIN); //add timestamp
-        try {
-            PBEKeySpec spec = new PBEKeySpec(base.toCharArray(), Utils.getSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            byte[] msk = factory.generateSecret(spec).getEncoded();
-            masterSessionKey = new SecretKeySpec(msk, Algorithms.AES.INSTANCE);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public SecretKey generateMasterSessionKey(SecuredMessage message) { //unique to bank server
+        HashMap<MessageHeaders, String> credentials = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(message.getMessage(), masterKey, Algorithms.AES.INSTANCE);
+        if(SecurityUtils.verifyMac(credentials, message.getMessageIntegrityAuthentication(), masterKey)) {
+            String base = credentials.get(MessageHeaders.CARDNUM) + credentials.get(MessageHeaders.PIN) + credentials.get(MessageHeaders.TIMESTAMP);
+            try {
+                PBEKeySpec spec = new PBEKeySpec(base.toCharArray(), Utils.getSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
+                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+                byte[] msk = factory.generateSecret(spec).getEncoded();
+                masterSessionKey = new SecretKeySpec(msk, Algorithms.AES.INSTANCE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return masterSessionKey;
     }
-    public SecuredMessage deriveSessionAndMacKeysAndGenerateMessage() {
-        SecuredMessage message;
+
+    public SecuredMessage deriveSessionAndMacKeysAndGenerateMessage() { //unique to bank server
+        SecuredMessage message = null;
         try {
+            //deriving keys
             PBEKeySpec spec = new PBEKeySpec(Utils.keyToString(masterSessionKey).toCharArray(), Utils.getSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             byte[] sk = factory.generateSecret(spec).getEncoded();
             spec = new PBEKeySpec(Utils.keyToString(masterSessionKey).toCharArray(), Utils.getSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
             byte[] mak = factory.generateSecret(spec).getEncoded();
+            //setting instance variables
             sessionKey = new SecretKeySpec(sk, Algorithms.AES.INSTANCE);
             macKey = new SecretKeySpec(mak, Algorithms.AES.INSTANCE);
 
+            //creating message
             HashMap<MessageHeaders, String> keys =  new HashMap<MessageHeaders, String>();
-            //make new headers
-            message = new SecuredMessage(sk, mak);
+            keys.put(MessageHeaders.SESSIONKEY, Utils.keyToString(sessionKey));
+            keys.put(MessageHeaders.MACKEY, Utils.keyToString(macKey));
+            byte[] encryptedMessage = SecurityUtils.encrypt(keys, masterKey, Algorithms.AES.INSTANCE);
+            byte[] messageMac = SecurityUtils.makeMac(keys, masterKey);
+            message = new SecuredMessage(encryptedMessage, messageMac);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return message;
+    }
+    @SuppressWarnings("unchecked")
+    public boolean getDerivedKeys(SecuredMessage message) { //unique to atm
+        HashMap<MessageHeaders, String> keys = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(message.getMessage(), masterKey, Algorithms.AES.INSTANCE);
+        if(SecurityUtils.verifyMac(keys, message.getMessageIntegrityAuthentication(), masterKey)) {
+            sessionKey = AES.stringToKey(keys.get(MessageHeaders.SESSIONKEY));
+            macKey = AES.stringToKey(keys.get(MessageHeaders.MACKEY));
+            return true;
+        }
+        return false;
+    }
+
+    public SecuredMessage encryptAndSignMessage(Object message) {
+        SecuredMessage sMessage = null;
+        try {
+            byte[] encryptedMessage = SecurityUtils.encrypt(message, sessionKey, Algorithms.AES.INSTANCE);
+            byte[] messageMac = SecurityUtils.makeMac(message, macKey);
+            sMessage = new SecuredMessage(encryptedMessage, messageMac);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sMessage;
+    }
+    public Object decryptAndVerifyMessage(SecuredMessage message) {
+        Object decryptedMessage = SecurityUtils.decrypt(message.getMessage(), sessionKey, Algorithms.AES.INSTANCE);
+        if(SecurityUtils.verifyMac(decryptedMessage, message.getMessageIntegrityAuthentication(), macKey)) {
+            return decryptedMessage;
+        }
+        return null;
     }
 }

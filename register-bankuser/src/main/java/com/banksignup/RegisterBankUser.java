@@ -26,7 +26,7 @@ public class RegisterBankUser {
             //response
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
             System.out.println(response.get(MessageHeaders.REQUESTTYPE));
-            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
+            System.out.println(response.get(MessageHeaders.RESPONSECODE));
             System.out.println("****************\n");
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,7 +41,7 @@ public class RegisterBankUser {
             out.flush();
 
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
-            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
+            System.out.println(response.get(MessageHeaders.RESPONSECODE));
         } catch (Exception e) {
             e.printStackTrace();
         }

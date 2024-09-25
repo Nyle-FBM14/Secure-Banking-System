@@ -32,9 +32,9 @@ public class ControllerWithdrawPage extends Controller {
             out.flush();
 
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
-            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
+            System.out.println(response.get(MessageHeaders.RESPONSECODE));
 
-            return response.get(MessageHeaders.RESPONSE_CODE).equals(Integer.toString(ResponseStatusCodes.SUCCESS.code));
+            return response.get(MessageHeaders.RESPONSECODE).equals(Integer.toString(ResponseStatusCodes.SUCCESS.code));
         } catch (Exception e) {
             e.printStackTrace();
         }

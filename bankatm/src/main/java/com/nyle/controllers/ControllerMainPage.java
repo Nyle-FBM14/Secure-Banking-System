@@ -59,7 +59,7 @@ public class ControllerMainPage extends Controller {
             out.flush();
 
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
-            System.out.println(response.get(MessageHeaders.RESPONSE_CODE));
+            System.out.println(response.get(MessageHeaders.RESPONSECODE));
 
             return response.get(MessageHeaders.RESPONSE);
         } catch (Exception e) {

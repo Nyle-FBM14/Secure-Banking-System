@@ -35,11 +35,11 @@ public class WithdrawCommand implements Command {
             BankUser user = bank.getBankUser(cardNum);
             if(user == null || !(user.authenticate(pin))) { //invalid card or pin
                 System.out.println("Request attempt with invalid credentials.\nCard number: " + cardNum + "\nPin: " + pin);
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.ERROR.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.ERROR.code));
             }
             else{
                 user.withdraw(withdrawAmount);
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
                 System.out.println(String.format("Withdrew $&f from account with card number %s", withdrawAmount, cardNum));
             }
             

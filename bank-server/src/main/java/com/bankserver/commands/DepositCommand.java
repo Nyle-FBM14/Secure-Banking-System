@@ -35,11 +35,11 @@ public class DepositCommand implements Command{
             BankUser user = bank.getBankUser(cardNum);
             if(user == null || !(user.authenticate(pin))) { //invalid card or pin
                 System.out.println("Request attempt with invalid credentials.\nCard number: " + cardNum + "\nPin: " + pin);
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.ERROR.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.ERROR.code));
             }
             else{
                 user.deposit(depositAmount);
-                response.put(MessageHeaders.RESPONSE_CODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
                 System.out.println(String.format("Deposited $&f into account with card number %s", depositAmount, cardNum));
             }
             out.writeObject(response);

@@ -3,7 +3,7 @@ package com.enumerations;
 public enum MessageHeaders {
     REQUESTTYPE,
     RESPONSE,
-    RESPONSE_CODE,
+    RESPONSECODE,
     DEPOSITAMOUNT,
     WITHDRAWAMOUNT,
     CARDNUM,
