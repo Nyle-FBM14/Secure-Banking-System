@@ -3,6 +3,7 @@ package com.nyle;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.HashMap;
@@ -18,31 +19,44 @@ import com.nyle.enumerations.Algorithms;
 import com.nyle.enumerations.KeySizes;
 import com.nyle.enumerations.MessageHeaders;
 
-public class BankServerSecurity {
+public class SecureBanking {
     private SecretKey masterKey; //initially created with each new ATM connection
-    private SecretKey masterSessionKey; //created with each client login - a session key for encryption key and a mac key will be derived from this
-    private SecretKey sessionKey;
-    private SecretKey macKey;
+    private SecretKey masterSessionKey; //created with each client login - atm will not have this
+    private SecretKey sessionKey; //derived from master session key
+    private SecretKey macKey; //derived from master session key
     private PrivateKey privateKey;
     private PublicKey publicKey;
-    private PublicKey publicKeyReceiver; //make setter
+    private PublicKey publicKeyPartner;
 
-    public BankServerSecurity() {
+    public SecureBanking() {
         KeyPair keypair = RSA.generateRSAkeypair();
         privateKey = keypair.getPrivate();
         publicKey = keypair.getPublic();
     }
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
 
-    public SecuredMessage GenerateDHPrimeMessage() { //maybe generalize A
+    public void setpublicKeyPartner(PublicKey publicKeyPartner) {
+        this.publicKeyPartner = publicKeyPartner;
+    }
+
+    public SecuredMessage generateDHPrimeMessage() { //maybe generalize A
         BigInteger prime = Utils.getLargePrime();
         byte[] signedPrime = RSA.signDigitalSignature(privateKey, prime);
         return new SecuredMessage(Utils.serialize(prime), signedPrime);
     }
-    public KeyPair generateDHKeyPair(SecuredMessage dhPrime, byte[] myPrime) {
+    public KeyPair generateDHKeyPair(SecuredMessage dhPrime, byte[] myPrime, boolean isBank) {
         BigInteger p1 = (BigInteger) Utils.deserialize(dhPrime.getMessage());
-        if(RSA.verifyDigitalSignature(publicKeyReceiver, p1, dhPrime.getMessageIntegrityAuthentication())) {
+        if(RSA.verifyDigitalSignature(publicKeyPartner, p1, dhPrime.getMessageIntegrityAuthentication())) {
             BigInteger p2 = (BigInteger) Utils.deserialize(myPrime);
-            DHParameterSpec dhSpecs = new DHParameterSpec(p1, p2, KeySizes.DH_PRIME.SIZE);
+            DHParameterSpec dhSpecs;
+            if(isBank) {
+                dhSpecs = new DHParameterSpec(p1, p2, KeySizes.DH_PRIME.SIZE);
+            }
+            else {
+                dhSpecs = new DHParameterSpec(p2, p1, KeySizes.DH_PRIME.SIZE);
+            }
             try {
                 KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
                 keyGen.initialize(dhSpecs);
@@ -53,18 +67,20 @@ public class BankServerSecurity {
         }
         return null;
     }
-    public SecuredMessage GenerateDHPublicKeyMessage(PublicKey key) { //maybe generalize A
+    public SecuredMessage generateDHPublicKeyMessage(PublicKey key) { //maybe generalize A
         byte[] signedKey = RSA.signDigitalSignature(privateKey, key);
         return new SecuredMessage(Utils.serialize(key), signedKey);
     }
     public void generateMasterKey(SecuredMessage senderDHPubKey, PrivateKey prKey) {
         PublicKey senderDHPublicKey = (PublicKey) Utils.deserialize(senderDHPubKey.getMessage());
-        if(RSA.verifyDigitalSignature(publicKeyReceiver, senderDHPublicKey, senderDHPubKey.getMessageIntegrityAuthentication())){
+        if(RSA.verifyDigitalSignature(publicKeyPartner, senderDHPublicKey, senderDHPubKey.getMessageIntegrityAuthentication())){
             try {
                 KeyAgreement keyAgree = KeyAgreement.getInstance("DH");
                 keyAgree.init(prKey);
                 keyAgree.doPhase(senderDHPublicKey, true);
-                masterKey = keyAgree.generateSecret(Algorithms.AES.INSTANCE);
+                byte[] sharedKey = keyAgree.generateSecret();
+                MessageDigest hashFunction = MessageDigest.getInstance(Algorithms.HASH256.INSTANCE);
+                masterKey = new SecretKeySpec(hashFunction.digest(sharedKey), Algorithms.AES.INSTANCE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -77,12 +93,12 @@ public class BankServerSecurity {
         return new SecuredMessage(encryptedMessage, mac);
     }
     @SuppressWarnings("unchecked")
-    public SecretKey generateMasterSessionKey(SecuredMessage message) { //unique to bank server
+    public void generateMasterSessionKey(SecuredMessage message) { //unique to bank server
         HashMap<MessageHeaders, String> credentials = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(message.getMessage(), masterKey, Algorithms.AES.INSTANCE);
         if(SecurityUtils.verifyMac(credentials, message.getMessageIntegrityAuthentication(), masterKey)) {
             String base = credentials.get(MessageHeaders.CARDNUM) + credentials.get(MessageHeaders.PIN) + credentials.get(MessageHeaders.TIMESTAMP);
             try {
-                PBEKeySpec spec = new PBEKeySpec(base.toCharArray(), Utils.getSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
+                PBEKeySpec spec = new PBEKeySpec(base.toCharArray(), Utils.getSalt(), KeySizes.MASTERSESSIONKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
                 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
                 byte[] msk = factory.generateSecret(spec).getEncoded();
                 masterSessionKey = new SecretKeySpec(msk, Algorithms.AES.INSTANCE);
@@ -90,17 +106,17 @@ public class BankServerSecurity {
                 e.printStackTrace();
             }
         }
-        return masterSessionKey;
+        //return masterSessionKey;
     }
 
     public SecuredMessage deriveSessionAndMacKeysAndGenerateMessage() { //unique to bank server
         SecuredMessage message = null;
         try {
             //deriving keys
-            PBEKeySpec spec = new PBEKeySpec(Utils.keyToString(masterSessionKey).toCharArray(), Utils.getSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
+            PBEKeySpec spec = new PBEKeySpec(Utils.keyToString(masterSessionKey).toCharArray(), Utils.getSalt(), KeySizes.MASTERSESSIONKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             byte[] sk = factory.generateSecret(spec).getEncoded();
-            spec = new PBEKeySpec(Utils.keyToString(masterSessionKey).toCharArray(), Utils.getSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
+            spec = new PBEKeySpec(Utils.keyToString(masterSessionKey).toCharArray(), Utils.getSalt(), KeySizes.MASTERSESSIONKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
             byte[] mak = factory.generateSecret(spec).getEncoded();
             //setting instance variables
             sessionKey = new SecretKeySpec(sk, Algorithms.AES.INSTANCE);

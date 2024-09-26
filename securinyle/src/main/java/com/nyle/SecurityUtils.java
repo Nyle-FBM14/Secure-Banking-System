@@ -1,6 +1,7 @@
 package com.nyle;
 
 import java.security.Key;
+import java.security.MessageDigest;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
@@ -79,6 +80,6 @@ public class SecurityUtils {
 
     public static boolean verifyMac(Object message, byte[] receivedMac, SecretKey macKey) {
         byte[] generatedMac = makeMac(message, macKey);
-        return generatedMac.equals(receivedMac);
+        return MessageDigest.isEqual(receivedMac, generatedMac);
     }
 }

@@ -3,6 +3,8 @@ package com.nyle;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -14,44 +16,46 @@ import com.nyle.enumerations.RequestTypes;
 public class Main {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
+        SecureBanking bank = new SecureBanking();
+        SecureBanking atm = new SecureBanking();
 
-        SecretKey key = AES.generateKey();
-        KeyPair keypairA = RSA.generateRSAkeypair();
-        PublicKey puA = keypairA.getPublic();
-        PrivateKey prA = keypairA.getPrivate();
-        KeyPair keypairB = RSA.generateRSAkeypair();
-        PublicKey puB = keypairB.getPublic();
-        PrivateKey prB = keypairB.getPrivate();
+        bank.setpublicKeyPartner(atm.getPublicKey());
+        atm.setpublicKeyPartner(bank.getPublicKey());
 
-        HashMap<MessageHeaders, String> mssg = new HashMap<MessageHeaders, String>();
-        HashMap<MessageHeaders, String> decryptedMssg;
-        byte[] encryptedMssg;
-        mssg.put(MessageHeaders.REQUESTTYPE, RequestTypes.SECURE_CONNECTION.toString());
-        mssg.put(MessageHeaders.CARDNUM, "1111222233337777");
+        SecuredMessage bankPrimeM = bank.generateDHPrimeMessage();
+        SecuredMessage atmPrimeM = atm.generateDHPrimeMessage();
 
-        System.out.println("Original Message");
-        System.out.println(mssg);
-        System.out.println(Utils.serialize(mssg).length);
+        KeyPair bankKeyPair = bank.generateDHKeyPair(atmPrimeM, bankPrimeM.getMessage(), true);
+        KeyPair atmKeyPair = atm.generateDHKeyPair(bankPrimeM, atmPrimeM.getMessage(), false);
 
-        System.out.println("\nAES Encryption");
-        encryptedMssg = SecurityUtils.encrypt(mssg, key, "AES");
-        System.out.println(Arrays.toString(encryptedMssg));
+        SecuredMessage bankPubKey = bank.generateDHPublicKeyMessage(bankKeyPair.getPublic());
+        SecuredMessage atmPubKey = atm.generateDHPublicKeyMessage(atmKeyPair.getPublic());
 
-        System.out.println("\nAES Decryption");
-        decryptedMssg = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(encryptedMssg, key, "AES");
-        System.out.println(decryptedMssg);
+        bank.generateMasterKey(atmPubKey, bankKeyPair.getPrivate());
+        atm.generateMasterKey(bankPubKey, atmKeyPair.getPrivate());
 
-        System.out.println("\nSign Digital Sig");
-        byte[] sig = RSA.signDigitalSignature(prA, mssg);
-        encryptedMssg = SecurityUtils.encrypt(mssg, puB, "RSA/ECB/PKCS1Padding");
-        SecuredMessage sm = new SecuredMessage(encryptedMssg, sig);
+        HashMap<MessageHeaders, String> credentials = new HashMap<MessageHeaders, String>();
+        credentials.put(MessageHeaders.CARDNUM, "0000111133337777");
+        credentials.put(MessageHeaders.PIN, "3737");
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        credentials.put(MessageHeaders.TIMESTAMP, sdf.format(ts));
+        SecuredMessage credMssg = atm.generateCredentialsMessage(credentials);
 
-        System.out.println("\nVerify Digital Sig");
-        decryptedMssg = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(sm.getMessage(), prB, "RSA/ECB/PKCS1Padding");
-        System.out.println(decryptedMssg);
-        if(RSA.verifyDigitalSignature(puA, decryptedMssg, sm.getMessageIntegrityAuthentication()))
-            System.out.println("Valid signature");
-        else
-            System.out.println("Invalid signature");
+        bank.generateMasterSessionKey(credMssg);
+        SecuredMessage sessionKeys = bank.deriveSessionAndMacKeysAndGenerateMessage();
+        atm.getDerivedKeys(sessionKeys);
+
+        HashMap<MessageHeaders, String> test = new HashMap<MessageHeaders, String>();
+        test.put(MessageHeaders.CARDNUM, "0000111133337777");
+        test.put(MessageHeaders.PIN, "3737");
+        test.put(MessageHeaders.ID, "Nyle");
+
+        SecuredMessage send = atm.encryptAndSignMessage(test);
+        HashMap<MessageHeaders, String> receive = (HashMap<MessageHeaders, String>) bank.decryptAndVerifyMessage(send);
+
+        System.out.println(receive.get(MessageHeaders.CARDNUM));
+        System.out.println(receive.get(MessageHeaders.PIN));
+        System.out.println(receive.get(MessageHeaders.ID));
     }
 }
