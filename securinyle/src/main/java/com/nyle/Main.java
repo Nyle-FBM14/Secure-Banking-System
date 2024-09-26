@@ -1,17 +1,11 @@
 package com.nyle;
 
 import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 
-import javax.crypto.SecretKey;
-
 import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.RequestTypes;
 
 public class Main {
     @SuppressWarnings("unchecked")

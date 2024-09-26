@@ -12,5 +12,6 @@ public enum MessageHeaders {
     ID,
     TIMESTAMP,
     SESSIONKEY,
-    MACKEY;
+    MACKEY,
+    NONCE;
 }

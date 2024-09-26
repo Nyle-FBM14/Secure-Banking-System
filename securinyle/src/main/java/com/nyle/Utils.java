@@ -39,13 +39,23 @@ public class Utils {
     public static String keyToString(SecretKey key) {
         return Base64.getEncoder().encodeToString(key.getEncoded());
     }
-
-    public static BigInteger getLargePrime() {
-        SecureRandom randNum = new SecureRandom();
-        return BigInteger.probablePrime(KeySizes.DH_PRIME.SIZE, randNum);
+    public static byte[] generateSalt() {
+        SecureRandom random = new SecureRandom();
+        return random.generateSeed(16);
     }
-    public static byte[] getSalt() {
-        SecureRandom rand = new SecureRandom();
-        return rand.generateSeed(16);
+    public static BigInteger generateLargePrime() {
+        SecureRandom random = new SecureRandom();
+        return BigInteger.probablePrime(KeySizes.DH_PRIME.SIZE, random);
+    }
+    public static String generateNonce() {
+        SecureRandom random = new SecureRandom();
+        byte[] nonce = new byte[8];
+        random.nextBytes(nonce);
+
+        String hex = "";
+        for(byte b : nonce) {
+            hex += String.format("%02X", b);
+        }
+        return hex;
     }
 }
