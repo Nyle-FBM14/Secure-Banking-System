@@ -2,11 +2,13 @@ package com.bankserver;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Queue;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
 
 public class Bank {
 
@@ -19,7 +21,7 @@ public class Bank {
         loadAtms();
         loadClients();
     }
-    public static Bank getBankInstance(){
+    public static Bank getBankInstance() {
         Bank bankTemp = bankInstance;
         if(bankTemp == null) {
             synchronized(Bank.class){
@@ -30,19 +32,26 @@ public class Bank {
         }
         return bankTemp;
     }
-    public String getID(){
+    public String getID() {
         return ID;
     }
-    public void addClient(BankUser b){
+    public void addClient(BankUser b) {
         bankUsers.add(b);
     }
-    public void addATM(Atm a){
+    public void addATM(Atm a) {
         atms.add(a);
     }
-    public BankUser getBankUser(String cardNum){
+    public BankUser getBankUser(String cardNum) {
         for(BankUser b : bankUsers){
             if(b.getCardNum().equals(cardNum))
                 return b;
+        }
+        return null;
+    }
+    public Atm getAtm(String id) {
+        for(Atm a : atms) {
+            if(a.getId().equals(id))
+            return a;
         }
         return null;
     }
@@ -58,12 +67,13 @@ public class Bank {
             BufferedReader reader = new BufferedReader(new FileReader(atmFile));
             while((atmData = reader.readLine()) != null) {
                 String[] data = atmData.split(",");
-                Queue<String> secretkeys = new PriorityQueue<>();
-
-                for(int i = 1; i <6; i++)
-                    secretkeys.add(data[i]);
-
-                this.atms.add(new Atm(data[0], secretkeys));
+                //PBEKeySpec spec = new PBEKeySpec(data[1].toCharArray(), Utils.generateSalt(), KeySizes.MASTERSESSIONKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
+                byte[] salt = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+                PBEKeySpec spec = new PBEKeySpec(data[1].toCharArray(), salt, 1000, 256);
+                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+                byte[] initialKeyBytes = factory.generateSecret(spec).getEncoded();
+                SecretKey initialKey = new SecretKeySpec(initialKeyBytes, "AES");
+                this.atms.add(new Atm(data[0], initialKey));
             }
             reader.close();
         } catch (Exception e) {

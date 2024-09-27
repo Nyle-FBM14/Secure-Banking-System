@@ -1,14 +1,14 @@
 package com.bankserver;
 
-import java.util.Queue;
+import javax.crypto.SecretKey;
 
 public class Atm {
     private String id;
-    private Queue<String> secretkeys;
+    private SecretKey key;
     
-    public Atm(String id, Queue<String> secretkeys) {
+    public Atm(String id, SecretKey key) {
         this.id = id;
-        this.secretkeys = secretkeys;
+        this.key = key;
     }
 
     public String getId() {
@@ -19,11 +19,11 @@ public class Atm {
         this.id = id;
     }
 
-    public String getSecretkey() {
-        return secretkeys.poll();
+    public SecretKey getSecretkey() {
+        return key;
     }
 
-    public void addSecretkey(String secretkey) {
-        secretkeys.offer(secretkey);
+    public void setSecretkey(SecretKey key) {
+        this.key = key;
     }
 }
