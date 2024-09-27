@@ -26,8 +26,8 @@ public class ConnectCommand implements Command{
     public void execute(){
         try {
             String id = request.get(MessageHeaders.ID);
-            Atm atm = new Atm(id);
-            bank.addATM(atm);
+            //Atm atm = new Atm(id);
+            //bank.addATM(atm);
 
             //create response
             HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();

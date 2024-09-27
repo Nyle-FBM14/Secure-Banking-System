@@ -8,7 +8,6 @@ import java.util.HashMap;
 import com.nyle.enumerations.MessageHeaders;
 
 public class Main {
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         SecureBanking bank = new SecureBanking();
         SecureBanking atm = new SecureBanking();
