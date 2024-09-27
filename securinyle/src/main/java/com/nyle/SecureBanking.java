@@ -169,4 +169,10 @@ public class SecureBanking {
         }
         return null;
     }
+
+    public String nonceFunction(String nonceString) {
+        int nonce = Integer.parseInt(nonceString);
+        nonce = ((nonce + 37) * 7) / (nonce + 3);
+        return Integer.toString(nonce);
+    }
 }
