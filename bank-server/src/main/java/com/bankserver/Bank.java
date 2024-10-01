@@ -6,8 +6,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Base64;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.SecretKey;
 
@@ -77,7 +75,7 @@ public class Bank {
         }
     }
     private void loadClients() {
-        File userFile = new File("bank-server\\src\\main\\resources\\bank_atms.txt");
+        File userFile = new File("bank-server\\src\\main\\resources\\bank_users.txt");
         String userData;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(userFile));

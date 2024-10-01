@@ -9,5 +9,6 @@ public enum MessageHeaders {
     CARDNUM,
     PIN,
     STARTBALANCE,
-    ID;
+    ID,
+    NONCE;
 }
