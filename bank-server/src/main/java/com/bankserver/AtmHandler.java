@@ -24,7 +24,7 @@ import com.bankserver.commands.EndCommand;
 import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
-import com.enumerations.MessageHeaders;
+import com.nyle.enumerations.MessageHeaders;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;

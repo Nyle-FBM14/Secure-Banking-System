@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
-import com.enumerations.MessageHeaders;
-import com.enumerations.ResponseStatusCodes;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.ResponseStatusCodes;
 
 public class LoginCommand implements Command{
     private Bank bank = Bank.getBankInstance();
@@ -34,14 +34,14 @@ public class LoginCommand implements Command{
             response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
             
             if(user == null) { //check if user exists
-                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.INVALID_CARD.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.INVALID_CARD.CODE));
             }
             else if (user.authenticate(pin)){ //validate pin
-                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
                 System.out.println("Validated user with card num: " + cardNum);
             }
             else{
-                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.INVALID_PIN.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.INVALID_PIN.CODE));
             }
             out.writeObject(response);
             out.flush();

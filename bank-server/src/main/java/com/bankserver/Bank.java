@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 
 import javax.crypto.spec.SecretKeySpec;
+
+import com.nyle.AES;
+
 import javax.crypto.SecretKey;
 
 public class Bank {
@@ -66,7 +69,7 @@ public class Bank {
             BufferedReader reader = new BufferedReader(new FileReader(atmFile));
             while((atmData = reader.readLine()) != null) {
                 String[] data = atmData.split(",");
-                SecretKey initialKey = new SecretKeySpec(Base64.getDecoder().decode(data[1]), "AES");
+                SecretKey initialKey = AES.stringToKey(data[2]);
                 this.atms.add(new Atm(data[0], initialKey));
             }
             reader.close();

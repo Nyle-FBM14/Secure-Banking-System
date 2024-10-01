@@ -1,13 +1,12 @@
-package com.nyle.controllers;
-
-import com.nyle.ATMModel;
+package com.atm.controllers;
 
 import java.util.HashMap;
 
-import com.enumerations.MessageHeaders;
-import com.enumerations.RequestTypes;
-import com.enumerations.ResponseStatusCodes;
-import com.nyle.ATM;
+import com.atm.ATM;
+import com.atm.ATMModel;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
+import com.nyle.enumerations.ResponseStatusCodes;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,7 +40,7 @@ public class ControllerLoginPage extends Controller{
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
             System.out.println(response.get(MessageHeaders.RESPONSECODE));
 
-            return response.get(MessageHeaders.RESPONSECODE).equals(Integer.toString(ResponseStatusCodes.SUCCESS.code));
+            return response.get(MessageHeaders.RESPONSECODE).equals(Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
         } catch (Exception e) {
             e.printStackTrace();
         }

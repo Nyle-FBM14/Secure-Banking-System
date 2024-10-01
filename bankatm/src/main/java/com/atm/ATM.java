@@ -1,4 +1,4 @@
-package com.nyle;
+package com.atm;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,9 +21,9 @@ import java.util.HashMap;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.enumerations.MessageHeaders;
-import com.enumerations.RequestTypes;
-import com.nyle.controllers.Controller;
+import com.atm.controllers.Controller;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
 
 public class ATM extends Application {
 

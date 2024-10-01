@@ -2,9 +2,10 @@ module com.nyle {
     requires javafx.controls;
     requires javafx.fxml;
     requires transitive javafx.graphics;
+    requires securinyle;
 
-    opens com.nyle to javafx.fxml;
-    exports com.nyle;
-    opens com.nyle.controllers to javafx.fxml;
-    exports com.nyle.controllers;
+    opens com.atm to javafx.fxml;
+    exports com.atm;
+    opens com.atm.controllers to javafx.fxml;
+    exports com.atm.controllers;
 }

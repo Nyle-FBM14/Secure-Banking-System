@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
-import com.enumerations.MessageHeaders;
-import com.enumerations.ResponseStatusCodes;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.ResponseStatusCodes;
 
 public class RegisterCommand implements Command{
     private Bank bank = Bank.getBankInstance();
@@ -35,7 +35,7 @@ public class RegisterCommand implements Command{
             //create response
             HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
             response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
-            response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+            response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
             out.writeObject(response);
             out.flush();
 

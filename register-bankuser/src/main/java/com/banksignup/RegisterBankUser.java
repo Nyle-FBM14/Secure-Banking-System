@@ -4,8 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 
-import com.enumerations.MessageHeaders;
-import com.enumerations.RequestTypes;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
 
 public class RegisterBankUser {
 

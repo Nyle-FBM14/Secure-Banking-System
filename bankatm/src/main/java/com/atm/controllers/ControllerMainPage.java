@@ -1,11 +1,11 @@
-package com.nyle.controllers;
+package com.atm.controllers;
 
 import java.util.HashMap;
 
-import com.enumerations.MessageHeaders;
-import com.enumerations.RequestTypes;
-import com.nyle.ATM;
-import com.nyle.ATMModel;
+import com.atm.ATM;
+import com.atm.ATMModel;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

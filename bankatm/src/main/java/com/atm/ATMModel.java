@@ -1,4 +1,4 @@
-package com.nyle;
+package com.atm;
 
 public class ATMModel {
     private static volatile ATMModel modelInstance;

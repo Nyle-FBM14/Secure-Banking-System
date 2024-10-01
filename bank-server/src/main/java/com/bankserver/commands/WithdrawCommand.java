@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
-import com.enumerations.MessageHeaders;
-import com.enumerations.ResponseStatusCodes;
+import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.ResponseStatusCodes;
 
 public class WithdrawCommand implements Command {
     private Bank bank = Bank.getBankInstance();
@@ -35,11 +35,11 @@ public class WithdrawCommand implements Command {
             BankUser user = bank.getBankUser(cardNum);
             if(user == null || !(user.authenticate(pin))) { //invalid card or pin
                 System.out.println("Request attempt with invalid credentials.\nCard number: " + cardNum + "\nPin: " + pin);
-                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.ERROR.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.ERROR.CODE));
             }
             else{
                 user.withdraw(withdrawAmount);
-                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.code));
+                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
                 System.out.println(String.format("Withdrew $&f from account with card number %s", withdrawAmount, cardNum));
             }
             
