@@ -4,11 +4,11 @@ import javax.crypto.SecretKey;
 
 public class Atm {
     private String id;
-    private SecretKey key;
+    private SecretKey initialKey;
     
-    public Atm(String id, SecretKey key) {
+    public Atm(String id, SecretKey initialKey) {
         this.id = id;
-        this.key = key;
+        this.initialKey = initialKey;
     }
 
     public String getId() {
@@ -20,10 +20,10 @@ public class Atm {
     }
 
     public SecretKey getSecretkey() {
-        return key;
+        return initialKey;
     }
 
-    public void setSecretkey(SecretKey key) {
-        this.key = key;
+    public void newInitialKey() {
+        //this.initialKey = AES.generateKey();
     }
 }

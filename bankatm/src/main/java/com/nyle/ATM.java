@@ -7,13 +7,19 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Base64;
 import java.util.HashMap;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import com.enumerations.MessageHeaders;
 import com.enumerations.RequestTypes;
@@ -21,7 +27,8 @@ import com.nyle.controllers.Controller;
 
 public class ATM extends Application {
 
-    private static String id = "ATM1";
+    private static String id;
+    private static SecretKey initialKey;
     private static Scene scene;
     /*
         I think it's better to just make getter methods for the Object Input/Output Streams.
@@ -100,15 +107,23 @@ public class ATM extends Application {
     public static void main(String[] args) {
         String hostName = "localhost";
         int portNumber = 15777;
-
-        if (args.length == 3) {
-            hostName = args[0];
-            portNumber = Integer.parseInt(args[1]);
-            id = args[2];
+        if (args.length == 1) {
+            File atmFile = new File("bankatm\\src\\main\\resources\\com\\nyle\\" + args[0]);
+            String atmData;
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(atmFile));
+                while((atmData = reader.readLine()) != null) {
+                    String[] data = atmData.split(",");
+                    id = data[0];
+                    initialKey = new SecretKeySpec(Base64.getDecoder().decode(data[1]), "AES");
+                    hostName = data[2];
+                    portNumber = Integer.parseInt(data[3]);
+                }
+                reader.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        System.out.println("Host Name: " + hostName);
-        System.out.println("Port #: " + portNumber);
-
         try (
                 Socket socket = new Socket(hostName, portNumber);
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());

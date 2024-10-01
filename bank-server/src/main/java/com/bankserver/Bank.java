@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Base64;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -67,12 +68,7 @@ public class Bank {
             BufferedReader reader = new BufferedReader(new FileReader(atmFile));
             while((atmData = reader.readLine()) != null) {
                 String[] data = atmData.split(",");
-                //PBEKeySpec spec = new PBEKeySpec(data[1].toCharArray(), Utils.generateSalt(), KeySizes.MASTERSESSIONKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
-                byte[] salt = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-                PBEKeySpec spec = new PBEKeySpec(data[1].toCharArray(), salt, 1000, 256);
-                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-                byte[] initialKeyBytes = factory.generateSecret(spec).getEncoded();
-                SecretKey initialKey = new SecretKeySpec(initialKeyBytes, "AES");
+                SecretKey initialKey = new SecretKeySpec(Base64.getDecoder().decode(data[1]), "AES");
                 this.atms.add(new Atm(data[0], initialKey));
             }
             reader.close();

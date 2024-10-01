@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "BankServer",
+            "request": "launch",
+            "mainClass": "com.bankserver.BankServer",
+            "projectName": "bank-server"
+        },
+        {
+            "type": "java",
+            "name": "ATM",
+            "request": "launch",
+            "mainClass": "com.nyle/com.nyle.ATM",
+            "projectName": "bankatm",
+            "args": ["atm_data1.txt"]
+        },
+        {
+            "type": "java",
+            "name": "RegisterBankUser",
+            "request": "launch",
+            "mainClass": "com.banksignup.RegisterBankUser",
+            "projectName": "register-bankuser"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "com.nyle.Main",
+            "projectName": "securinyle"
+        }
+    ]
+}
