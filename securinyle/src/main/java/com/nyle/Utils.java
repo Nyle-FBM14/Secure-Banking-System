@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
+import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -36,7 +37,7 @@ public class Utils {
         return null;
     }
 
-    public static String keyToString(SecretKey key) {
+    public static String keyToString(Key key) {
         return Base64.getEncoder().encodeToString(key.getEncoded());
     }
     public static byte[] generateSalt() {

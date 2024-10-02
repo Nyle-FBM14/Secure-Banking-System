@@ -24,11 +24,13 @@ import com.bankserver.commands.EndCommand;
 import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
+import com.nyle.SecureBanking;
 import com.nyle.enumerations.MessageHeaders;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;
     private Bank bank = Bank.getBankInstance();
+    private SecureBanking secure = new SecureBanking();
 
     public AtmHandler(Socket socket) {
         super("AtmHandler");
@@ -61,7 +63,7 @@ public class AtmHandler extends Thread {
                         command = new CheckBalanceCommand(in, out, request);
                         break;
                     case "SECURE_CONNECTION": //new atm connection
-                        command = new ConnectCommand(in, out, request);
+                        command = new ConnectCommand(in, out, request, secure, secure.getPublicKey());
                         break;
                     case "LOGIN": //client login
                         command = new LoginCommand(in, out, request);
