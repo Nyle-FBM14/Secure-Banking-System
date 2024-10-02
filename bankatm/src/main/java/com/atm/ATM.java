@@ -15,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.PublicKey;
 import java.util.Base64;
 import java.util.HashMap;
 
@@ -22,6 +23,11 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.atm.controllers.Controller;
+import com.nyle.RSA;
+import com.nyle.SecureBanking;
+import com.nyle.SecurityUtils;
+import com.nyle.Utils;
+import com.nyle.enumerations.Algorithms;
 import com.nyle.enumerations.MessageHeaders;
 import com.nyle.enumerations.RequestTypes;
 
@@ -29,6 +35,7 @@ public class ATM extends Application {
 
     private static String id;
     private static SecretKey initialKey;
+    private static SecureBanking secure = new SecureBanking();
     private static Scene scene;
     /*
         I think it's better to just make getter methods for the Object Input/Output Streams.
@@ -90,19 +97,7 @@ public class ATM extends Application {
     }
     @SuppressWarnings("unchecked")
     private static void secureConnection(ObjectInputStream in, ObjectOutputStream out) {
-        try {
-            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.SECURE_CONNECTION.toString());
-            request.put(MessageHeaders.ID, id);
-
-            out.writeObject(request);
-            out.flush();
-
-            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
-            System.out.println(response.get(MessageHeaders.RESPONSECODE));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        
     }
     public static void main(String[] args) {
         String hostName = "localhost";

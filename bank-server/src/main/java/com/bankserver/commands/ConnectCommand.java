@@ -6,12 +6,9 @@ import java.security.PublicKey;
 import java.util.Base64;
 import java.util.HashMap;
 
-import javax.crypto.SecretKey;
-
 import com.bankserver.Atm;
 import com.bankserver.Bank;
 import com.nyle.AES;
-import com.nyle.RSA;
 import com.nyle.SecureBanking;
 import com.nyle.SecurityUtils;
 import com.nyle.Utils;
@@ -24,14 +21,12 @@ public class ConnectCommand implements Command{
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private HashMap<MessageHeaders, String> request;
-    private PublicKey bankPuKey;
     private SecureBanking secure;
 
-    public ConnectCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request, SecureBanking secure, PublicKey bankPuKey) {
+    public ConnectCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request, SecureBanking secure) {
         this.in = in;
         this.out = out;
         this.request = request;
-        this.bankPuKey = bankPuKey;
         this.secure = secure;
     }
 
@@ -46,6 +41,7 @@ public class ConnectCommand implements Command{
             //bank: E(initialKey, puBK || f(n) || initialKey')
             HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
             response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
+            PublicKey bankPuKey = secure.getPublicKey();
             response.put(MessageHeaders.RESPONSE, Base64.getEncoder().encodeToString(bankPuKey.getEncoded())); //rebuild securinyle
             nonce = secure.nonceFunction(nonce);
             request.put(MessageHeaders.NONCE, nonce);
@@ -58,6 +54,14 @@ public class ConnectCommand implements Command{
             byte[] atmResponse = (byte[]) in.readObject();
             PublicKey atmPuKey = (PublicKey) SecurityUtils.decrypt(atmResponse, atm.getSecretkey(), Algorithms.AES.INSTANCE);
             secure.setpublicKeyPartner(atmPuKey);
+
+            //bank: 200
+            response = new HashMap<MessageHeaders, String>();
+            response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
+            response.put(MessageHeaders.RESPONSECODE, ResponseStatusCodes.SUCCESS.toString());
+            res = SecurityUtils.encrypt(response, atm.getSecretkey(), Algorithms.AES.INSTANCE);
+            out.writeObject(res);
+            out.flush();
 
             System.out.println("Connection secured with ATM ID " + id);
         } catch (Exception e) {

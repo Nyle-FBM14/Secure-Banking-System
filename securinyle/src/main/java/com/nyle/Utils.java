@@ -9,8 +9,6 @@ import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-import javax.crypto.SecretKey;
-
 import com.nyle.enumerations.KeySizes;
 
 public class Utils {

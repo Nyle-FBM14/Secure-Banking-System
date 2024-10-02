@@ -11,10 +11,10 @@ public class Controller {
         this.in = in;
         this.out = out;
     }
-    public ObjectInputStream getInStream() {
+    public ObjectInputStream getInStream() { //unnecessary
         return in;
     }
-    public ObjectOutputStream getOutStream() {
+    public ObjectOutputStream getOutStream() { //unnecessary
         return out;
     }
 }
