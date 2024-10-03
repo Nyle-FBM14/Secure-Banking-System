@@ -7,34 +7,22 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.PublicKey;
-import java.util.Base64;
 import java.util.HashMap;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
 import com.atm.controllers.Controller;
-import com.nyle.RSA;
 import com.nyle.SecureBanking;
-import com.nyle.SecurityUtils;
-import com.nyle.Utils;
-import com.nyle.enumerations.Algorithms;
 import com.nyle.enumerations.MessageHeaders;
 import com.nyle.enumerations.RequestTypes;
 
 public class ATM extends Application {
 
     private static String id;
-    private static SecretKey initialKey;
     private static SecureBanking secure = new SecureBanking();
     private static Scene scene;
     /*
@@ -102,22 +90,8 @@ public class ATM extends Application {
     public static void main(String[] args) {
         String hostName = "localhost";
         int portNumber = 15777;
-        if (args.length == 1) {
-            File atmFile = new File("bankatm\\src\\main\\resources\\com\\nyle\\" + args[0]);
-            String atmData;
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(atmFile));
-                while((atmData = reader.readLine()) != null) {
-                    String[] data = atmData.split(",");
-                    id = data[0];
-                    initialKey = new SecretKeySpec(Base64.getDecoder().decode(data[1]), "AES");
-                    hostName = data[2];
-                    portNumber = Integer.parseInt(data[3]);
-                }
-                reader.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if(args.length == 1){
+            id = args[0];
         }
         try (
                 Socket socket = new Socket(hostName, portNumber);

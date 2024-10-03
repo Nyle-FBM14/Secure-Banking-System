@@ -2,19 +2,7 @@ package com.bankserver;
 
 import java.net.*;
 import java.io.*;
-/*
-import java.security.*;
-import java.security.spec.KeySpec;
-import javax.crypto.*;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.math.BigInteger;
-import java.security.spec.X509EncodedKeySpec;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import javax.crypto.spec.DHParameterSpec; */
 import java.util.HashMap;
-
 
 import com.bankserver.commands.CheckBalanceCommand;
 import com.bankserver.commands.Command;
@@ -63,7 +51,7 @@ public class AtmHandler extends Thread {
                         command = new CheckBalanceCommand(in, out, request);
                         break;
                     case "SECURE_CONNECTION": //new atm connection
-                        command = new ConnectCommand(in, out, request, secure, secure.getPublicKey());
+                        command = new ConnectCommand(in, out, request, secure);
                         break;
                     case "LOGIN": //client login
                         command = new LoginCommand(in, out, request);
