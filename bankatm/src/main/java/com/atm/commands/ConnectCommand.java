@@ -2,13 +2,10 @@ package com.atm.commands;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.Base64;
@@ -33,7 +30,7 @@ public class ConnectCommand implements Command {
     private SecretKey initialKey;
     private String id;
 
-    public ConnectCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, SecretKey initialKey, String id) {
+    public ConnectCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, String id) {
         this.in = in;
         this.out = out;
         this.secure = secure;

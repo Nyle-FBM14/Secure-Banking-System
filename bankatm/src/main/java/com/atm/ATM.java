@@ -15,6 +15,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import com.atm.commands.Command;
+import com.atm.commands.ConnectCommand;
 import com.atm.controllers.Controller;
 import com.nyle.SecureBanking;
 import com.nyle.enumerations.MessageHeaders;
@@ -79,13 +81,12 @@ public class ATM extends Application {
 
             HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) inputStream.readObject();
             System.out.println(response.get(MessageHeaders.RESPONSECODE));
+
+            inputStream.close();
+            outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    @SuppressWarnings("unchecked")
-    private static void secureConnection(ObjectInputStream in, ObjectOutputStream out) {
-        
     }
     public static void main(String[] args) {
         String hostName = "localhost";
@@ -102,7 +103,8 @@ public class ATM extends Application {
         {
             inputStream = in;
             outputStream = out;
-            secureConnection(in, out);
+            ConnectCommand command = new ConnectCommand(in, out, secure, id);
+            command.execute();
             launch();
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
