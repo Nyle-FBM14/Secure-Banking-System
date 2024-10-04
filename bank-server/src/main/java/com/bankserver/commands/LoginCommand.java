@@ -12,17 +12,21 @@ import com.nyle.enumerations.MessageHeaders;
 
 public class LoginCommand implements Command{
     private Bank bank = Bank.getBankInstance();
+    @SuppressWarnings("unused")
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private SecureBanking secure;
+    private SecuredMessage message;
 
-    public LoginCommand (ObjectInputStream in, ObjectOutputStream out, SecureBanking secure) {
+    public LoginCommand (ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, SecuredMessage message) {
         this.in = in;
         this.out = out;
+        this.secure = secure;
+        this.message = message;
     }
 
-    public boolean checkCredentials(SecuredMessage creds) {
-        HashMap<MessageHeaders, String> credentials = secure.decryptAndVerifyMessage(creds);
+    public boolean checkCredentials() {
+        HashMap<MessageHeaders, String> credentials = secure.decryptAndVerifyMessage(message);
         if(credentials == null)
             return false;
         BankUser user = bank.getBankUser(credentials.get(MessageHeaders.CARDNUM));
@@ -31,11 +35,10 @@ public class LoginCommand implements Command{
     @Override
     public void execute() {
         try {
-            SecuredMessage credentials = (SecuredMessage) in.readObject();
-            if(!checkCredentials(credentials)){
+            if(!checkCredentials()){
                 return;
             }
-            secure.generateMasterSessionKey(credentials);
+            secure.generateMasterSessionKey(message);
             SecuredMessage keys = secure.deriveSessionAndMacKeysAndGenerateMessage();
             out.writeObject(keys);
             out.flush();

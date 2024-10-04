@@ -13,7 +13,9 @@ import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
 import com.nyle.SecureBanking;
+import com.nyle.SecuredMessage;
 import com.nyle.enumerations.MessageHeaders;
+import com.nyle.enumerations.RequestTypes;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;
@@ -25,6 +27,47 @@ public class AtmHandler extends Thread {
         this.socket = socket;
     }
 
+    private boolean connectionLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception {
+        while(true) {
+            @SuppressWarnings("unchecked")
+            HashMap<MessageHeaders, String> request = (HashMap<MessageHeaders, String>) in.readObject();
+            Command command = null;
+            switch (request.get(MessageHeaders.REQUESTTYPE)) {
+                case "SECURE_CONNECTION":
+                    command = new ConnectCommand(in, out, request, secure);
+                    command.execute();
+                    return true;
+                case "REGISTER":
+                    command = new RegisterCommand(in, out, request);
+                    command.execute();
+                    break;
+                case "END":
+                    command = new EndCommand(in, out, request);
+                    command.execute();
+                    return false;
+            }
+        }
+    }
+    private boolean loginLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception {
+        while(true) {
+            SecuredMessage message = (SecuredMessage) in.readObject();
+            HashMap<MessageHeaders, String> request = secure.decryptAndVerifyMessage(message);
+            if(request != null) {
+                Command command = null;
+                switch (request.get(MessageHeaders.REQUESTTYPE)) {
+                    case "LOGIN":
+                        command = new LoginCommand(in, out, secure, message);
+                        command.execute();
+                        return true;
+                    case "END":
+                        command = new EndCommand(in, out, request);
+                        command.execute();
+                        return false;
+                }
+            }
+            
+        }
+    }
     @SuppressWarnings("unchecked")
     public void run() {
         try (
@@ -32,52 +75,53 @@ public class AtmHandler extends Thread {
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             )
         {
-            boolean atm_online = true;
-            HashMap<MessageHeaders, String> request;
-            //HashMap<MessageHeaders, String> response;
-            
-            while(atm_online){
-                Command command = null;
-                request = (HashMap<MessageHeaders, String>) in.readObject();
-                System.out.println("\n****************Command received: " + request.get(MessageHeaders.REQUESTTYPE));
-                switch(request.get(MessageHeaders.REQUESTTYPE)){
-                    case "DEPOSIT": //deposit
-                        command = new DepositCommand(in, out, request);
-                        break;
-                    case "WITHDRAW": //withdraw
-                        command = new WithdrawCommand(in, out, request);
-                        break;
-                    case "CHECK_BALANCE": //check balanace
-                        command = new CheckBalanceCommand(in, out, request);
-                        break;
-                    case "SECURE_CONNECTION": //new atm connection
-                        command = new ConnectCommand(in, out, request, secure);
-                        break;
-                    case "LOGIN": //client login
-                        command = new LoginCommand(in, out, request);
-                        break;
-                    case "LOGOUT": //client logout
-                        //command = new LogoutCommand(in, out, request);
-                        break;
-                    case "REGISTER": //register user
-                        command = new RegisterCommand(in, out, request);
-                        break;
-                    case "END": //atm or program that registers users terminates their connection
-                        command = new EndCommand(in, out, request);
-                        atm_online = false;
-                        bank.printBankData();
-                        break;
-                    default:
-                        System.out.println("ATM Handler default");
-                }
+            boolean atm_online = connectionLoop(in, out);
+            if(atm_online) {
+                boolean user_online = loginLoop(in, out);
+                while(user_online){
+                    SecuredMessage message = (SecuredMessage) in.readObject();
+                    HashMap<MessageHeaders, String> request = secure.decryptAndVerifyMessage(message);
+                    if(request == null)
+                        continue;
+                    
+                    Command command = null;
+                    System.out.println("\n****************Command received: " + request.get(MessageHeaders.REQUESTTYPE));
+                    switch(request.get(MessageHeaders.REQUESTTYPE)){
+                        case "DEPOSIT": //deposit
+                            command = new DepositCommand(in, out, request);
+                            break;
+                        case "WITHDRAW": //withdraw
+                            command = new WithdrawCommand(in, out, request);
+                            break;
+                        case "CHECK_BALANCE": //check balanace
+                            command = new CheckBalanceCommand(in, out, request);
+                            break;
+                        case "LOGOUT": //client logout
+                            //command = new LogoutCommand(in, out, request);
+                            user_online = loginLoop(in, out);
+                            break;
+                        case "REGISTER": //register user
+                            command = new RegisterCommand(in, out, request);
+                            break;
+                        case "END": //atm or program that registers users terminates their connection
+                            command = new EndCommand(in, out, request);
+                            user_online = false;
+                            bank.printBankData();
+                            break;
+                        default:
+                            System.out.println("ATM Handler default");
+                    }
 
-                if (command != null) {
-                    System.out.println("Executing command...");
-                    command.execute();
-                    System.out.println("Waiting for next request...\n****************\n");
-                }
-            } //end of while loop
+                    if (command != null) {
+                        System.out.println("Executing command...");
+                        command.execute();
+                        System.out.println("Waiting for next request...\n****************\n");
+                    }
+                } //end of while loop
+            } //end of if
             
+            in.close();
+            out.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
