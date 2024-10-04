@@ -15,7 +15,6 @@ import com.bankserver.commands.WithdrawCommand;
 import com.nyle.SecureBanking;
 import com.nyle.SecuredMessage;
 import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.RequestTypes;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;
@@ -68,17 +67,15 @@ public class AtmHandler extends Thread {
             
         }
     }
-    @SuppressWarnings("unchecked")
     public void run() {
         try (
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             )
         {
-            boolean atm_online = connectionLoop(in, out);
-            if(atm_online) {
-                boolean user_online = loginLoop(in, out);
-                while(user_online){
+            if(connectionLoop(in, out)) {
+                boolean online = loginLoop(in, out);
+                while(online){
                     SecuredMessage message = (SecuredMessage) in.readObject();
                     HashMap<MessageHeaders, String> request = secure.decryptAndVerifyMessage(message);
                     if(request == null)
@@ -98,14 +95,14 @@ public class AtmHandler extends Thread {
                             break;
                         case "LOGOUT": //client logout
                             //command = new LogoutCommand(in, out, request);
-                            user_online = loginLoop(in, out);
+                            online = loginLoop(in, out);
                             break;
                         case "REGISTER": //register user
                             command = new RegisterCommand(in, out, request);
                             break;
                         case "END": //atm or program that registers users terminates their connection
                             command = new EndCommand(in, out, request);
-                            user_online = false;
+                            online = false;
                             bank.printBankData();
                             break;
                         default:

@@ -25,7 +25,6 @@ import com.nyle.enumerations.RequestTypes;
 public class ATM extends Application {
 
     private static String id;
-    private static SecureBanking secure = new SecureBanking();
     private static Scene scene;
     /*
         I think it's better to just make getter methods for the Object Input/Output Streams.
@@ -35,6 +34,7 @@ public class ATM extends Application {
     */
     private static ObjectInputStream inputStream;
     private static ObjectOutputStream outputStream;
+    private static SecureBanking secure = new SecureBanking();
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -67,7 +67,7 @@ public class ATM extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(ATM.class.getResource(fxml + ".fxml"));
         Parent root = fxmlLoader.load();
         Controller controller = fxmlLoader.getController();
-        controller.setStreams(inputStream, outputStream);
+        controller.setStreams(inputStream, outputStream, secure);
         return root;
     }
 
