@@ -85,20 +85,17 @@ public class AtmHandler extends Thread {
                     System.out.println("\n****************Command received: " + request.get(MessageHeaders.REQUESTTYPE));
                     switch(request.get(MessageHeaders.REQUESTTYPE)){
                         case "DEPOSIT": //deposit
-                            command = new DepositCommand(in, out, request);
+                            command = new DepositCommand(in, out, request, secure);
                             break;
                         case "WITHDRAW": //withdraw
-                            command = new WithdrawCommand(in, out, request);
+                            command = new WithdrawCommand(in, out, request, secure);
                             break;
                         case "CHECK_BALANCE": //check balanace
-                            command = new CheckBalanceCommand(in, out, request);
+                            command = new CheckBalanceCommand(in, out, request, secure);
                             break;
                         case "LOGOUT": //client logout
                             //command = new LogoutCommand(in, out, request);
                             online = loginLoop(in, out);
-                            break;
-                        case "REGISTER": //register user
-                            command = new RegisterCommand(in, out, request);
                             break;
                         case "END": //atm or program that registers users terminates their connection
                             command = new EndCommand(in, out, request);

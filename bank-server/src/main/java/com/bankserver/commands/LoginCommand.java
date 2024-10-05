@@ -35,7 +35,7 @@ public class LoginCommand implements Command{
     @Override
     public void execute() {
         try {
-            if(!checkCredentials()){
+            if(!checkCredentials()){ //send response code
                 return;
             }
             secure.generateMasterSessionKey(message);

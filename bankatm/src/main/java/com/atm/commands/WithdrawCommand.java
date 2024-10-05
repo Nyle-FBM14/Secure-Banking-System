@@ -10,14 +10,14 @@ import com.nyle.SecuredMessage;
 import com.nyle.enumerations.MessageHeaders;
 import com.nyle.enumerations.RequestTypes;
 
-public class DepositCommand implements Command {
+public class WithdrawCommand implements Command{
     private ATMModel model = ATMModel.getATMModelInstance();
     private String amount;
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private SecureBanking secure;
-    
-    public DepositCommand(String amount, ObjectInputStream in, ObjectOutputStream out, SecureBanking secure) {
+
+    public WithdrawCommand(String amount, ObjectInputStream in, ObjectOutputStream out, SecureBanking secure) {
         this.amount = amount;
         this.in = in;
         this.out = out;
@@ -28,13 +28,13 @@ public class DepositCommand implements Command {
     public void execute() {
         try {
             HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.DEPOSIT.toString());
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.WITHDRAW.toString());
             request.put(MessageHeaders.CARDNUM, model.getCardNum());
             request.put(MessageHeaders.PIN, model.getPin());
-            request.put(MessageHeaders.DEPOSITAMOUNT, amount);
-
+            request.put(MessageHeaders.WITHDRAWAMOUNT, amount);
+            
             SecuredMessage message = secure.encryptAndSignMessage(request);
-            out.writeObject(message);
+            out.writeObject(request);
             out.flush();
 
             message = (SecuredMessage) in.readObject();

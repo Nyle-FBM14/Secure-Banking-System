@@ -10,15 +10,13 @@ import com.nyle.SecuredMessage;
 import com.nyle.enumerations.MessageHeaders;
 import com.nyle.enumerations.RequestTypes;
 
-public class DepositCommand implements Command {
+public class CheckBalanceCommand implements Command {
     private ATMModel model = ATMModel.getATMModelInstance();
-    private String amount;
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private SecureBanking secure;
-    
-    public DepositCommand(String amount, ObjectInputStream in, ObjectOutputStream out, SecureBanking secure) {
-        this.amount = amount;
+
+    public CheckBalanceCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure) {
         this.in = in;
         this.out = out;
         this.secure = secure;
@@ -28,11 +26,9 @@ public class DepositCommand implements Command {
     public void execute() {
         try {
             HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.DEPOSIT.toString());
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CHECK_BALANCE.toString());
             request.put(MessageHeaders.CARDNUM, model.getCardNum());
             request.put(MessageHeaders.PIN, model.getPin());
-            request.put(MessageHeaders.DEPOSITAMOUNT, amount);
-
             SecuredMessage message = secure.encryptAndSignMessage(request);
             out.writeObject(message);
             out.flush();
@@ -40,6 +36,8 @@ public class DepositCommand implements Command {
             message = (SecuredMessage) in.readObject();
             HashMap<MessageHeaders, String> response = secure.decryptAndVerifyMessage(message);
             System.out.println(response.get(MessageHeaders.RESPONSECODE));
+
+            System.out.println(response.get(MessageHeaders.RESPONSE));
         } catch (Exception e) {
             e.printStackTrace();
         }

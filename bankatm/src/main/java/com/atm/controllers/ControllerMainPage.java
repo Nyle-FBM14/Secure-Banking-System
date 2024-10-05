@@ -1,12 +1,8 @@
 package com.atm.controllers;
 
-import java.util.HashMap;
-
 import com.atm.ATM;
 import com.atm.ATMModel;
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.RequestTypes;
-
+import com.atm.commands.CheckBalanceCommand;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -47,26 +43,6 @@ public class ControllerMainPage extends Controller {
         }
         return false;
     }
-    @SuppressWarnings("unchecked")
-    private String requestCheckBalance() {
-        try {
-            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CHECK_BALANCE.toString());
-            request.put(MessageHeaders.CARDNUM, model.getCardNum());
-            request.put(MessageHeaders.PIN, model.getPin());
-            
-            out.writeObject(request);
-            out.flush();
-
-            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) in.readObject();
-            System.out.println(response.get(MessageHeaders.RESPONSECODE));
-
-            return response.get(MessageHeaders.RESPONSE);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
     @FXML
     void cancel(ActionEvent event) {
         if(requestLogout()){
@@ -76,7 +52,8 @@ public class ControllerMainPage extends Controller {
 
     @FXML
     void checkBalance(ActionEvent event) {
-        System.out.println(requestCheckBalance());
+        CheckBalanceCommand command = new CheckBalanceCommand(in, out, secure);
+        command.execute();
     }
 
     @FXML

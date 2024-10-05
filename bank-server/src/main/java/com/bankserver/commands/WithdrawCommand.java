@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
+import com.nyle.SecureBanking;
+import com.nyle.SecuredMessage;
 import com.nyle.enumerations.MessageHeaders;
 import com.nyle.enumerations.ResponseStatusCodes;
 
@@ -15,11 +17,13 @@ public class WithdrawCommand implements Command {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private HashMap<MessageHeaders, String> request;
+    private SecureBanking secure;
 
-    public WithdrawCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request) {
+    public WithdrawCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request, SecureBanking secure) {
         this.in = in;
         this.out = out;
         this.request = request;
+        this.secure = secure;
     }
 
     @Override
@@ -42,8 +46,8 @@ public class WithdrawCommand implements Command {
                 response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
                 System.out.println(String.format("Withdrew $&f from account with card number %s", withdrawAmount, cardNum));
             }
-            
-            out.writeObject(response);
+            SecuredMessage message = secure.encryptAndSignMessage(response);
+            out.writeObject(message);
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();

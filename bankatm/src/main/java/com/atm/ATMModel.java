@@ -6,6 +6,7 @@ public class ATMModel {
     private final int MIN_PIN_LEN = 4;
     private String cardNum;
     private String pin;
+    private String balance;
 
     private ATMModel(){
         //idk what 
@@ -25,6 +26,12 @@ public class ATMModel {
     public void setCredentials(String cardNum, String pin) {
         this.cardNum = cardNum;
         this.pin = pin;
+    }
+    public void setBalance(String balance) {
+        this.balance = balance;
+    }
+    public String getBalance() {
+        return balance;
     }
     public String getCardNum() {
         return cardNum;
@@ -49,7 +56,6 @@ public class ATMModel {
             System.out.println("Missing credentials.");
             return false;
         }
-
         if(!(isNumeric(cardNum) && isNumeric(pin))){
             System.out.println("Non-numeric input.");
             return false;

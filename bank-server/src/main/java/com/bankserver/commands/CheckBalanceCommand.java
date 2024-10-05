@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
+import com.nyle.SecureBanking;
+import com.nyle.SecuredMessage;
 import com.nyle.enumerations.MessageHeaders;
 import com.nyle.enumerations.ResponseStatusCodes;
 
@@ -15,11 +17,13 @@ public class CheckBalanceCommand implements Command {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private HashMap<MessageHeaders, String> request;
+    private SecureBanking secure;
 
-    public CheckBalanceCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request) {
+    public CheckBalanceCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request, SecureBanking secure) {
         this.in = in;
         this.out = out;
         this.request = request;
+        this.secure = secure;
     }
     @Override
     public void execute() {
@@ -41,7 +45,8 @@ public class CheckBalanceCommand implements Command {
                 response.put(MessageHeaders.RESPONSE, Double.toString(balance));
                 System.out.println(String.format("Balance of account with card number %s is $%f.", cardNum, balance));
             }
-            out.writeObject(response);
+            SecuredMessage message = secure.encryptAndSignMessage(response);
+            out.writeObject(message);
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();
