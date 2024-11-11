@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.ResponseStatusCodes;
+import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.ResponseStatusCodes;
 
 public class RegisterCommand implements Command{
     private Bank bank = Bank.getBankInstance();

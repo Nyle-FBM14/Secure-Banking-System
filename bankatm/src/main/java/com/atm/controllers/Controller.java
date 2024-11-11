@@ -3,7 +3,7 @@ package com.atm.controllers;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import com.nyle.SecureBanking;
+import com.security.SecureBanking;
 
 public class Controller {
     protected ObjectOutputStream out;

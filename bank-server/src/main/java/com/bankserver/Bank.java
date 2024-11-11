@@ -1,12 +1,16 @@
 package com.bankserver;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
-import com.nyle.AES;
 import javax.crypto.SecretKey;
+
+import com.security.AES;
+import com.security.Utils;
 
 public class Bank {
 
@@ -65,7 +69,7 @@ public class Bank {
             BufferedReader reader = new BufferedReader(new FileReader(atmFile));
             while((atmData = reader.readLine()) != null) {
                 String[] data = atmData.split(",");
-                SecretKey initialKey = AES.stringToKey(data[2]);
+                SecretKey initialKey = AES.stringToKey(data[1]);
                 this.atms.add(new Atm(data[0], initialKey));
             }
             reader.close();
@@ -83,6 +87,20 @@ public class Bank {
                 this.bankUsers.add(new BankUser(data[0], data[1], Double.parseDouble(data[2])));
             }
             reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void writeAtms() {
+        try {
+            FileWriter atmFile = new FileWriter("bank-server\\src\\main\\resources\\bank_atms.txt");
+            BufferedWriter writer = new BufferedWriter(atmFile);
+            
+            for(Atm a: atms) {
+                writer.write(a.getId() + "," + Utils.keyToString(a.getInitialkey()) + "\n");
+            }
+            writer.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

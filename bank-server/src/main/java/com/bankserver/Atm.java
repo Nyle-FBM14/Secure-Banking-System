@@ -1,6 +1,7 @@
 package com.bankserver;
 
 import javax.crypto.SecretKey;
+import com.security.AES;
 
 public class Atm {
     private String id;
@@ -19,11 +20,11 @@ public class Atm {
         this.id = id;
     }
 
-    public SecretKey getSecretkey() {
+    public SecretKey getInitialkey() {
         return initialKey;
     }
 
     public void newInitialKey() {
-        //this.initialKey = AES.generateKey();
+        this.initialKey = AES.generateKey();
     }
 }

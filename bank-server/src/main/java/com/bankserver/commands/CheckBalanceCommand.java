@@ -6,10 +6,10 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
-import com.nyle.SecureBanking;
-import com.nyle.SecuredMessage;
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.ResponseStatusCodes;
+import com.security.SecureBanking;
+import com.security.SecuredMessage;
+import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.ResponseStatusCodes;
 
 public class CheckBalanceCommand implements Command {
     private Bank bank = Bank.getBankInstance();

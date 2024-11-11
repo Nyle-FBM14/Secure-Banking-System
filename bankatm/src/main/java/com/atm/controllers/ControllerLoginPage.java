@@ -1,13 +1,8 @@
 package com.atm.controllers;
 
-import java.util.HashMap;
-
 import com.atm.ATM;
 import com.atm.ATMModel;
 import com.atm.commands.LoginCommand;
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.RequestTypes;
-import com.nyle.enumerations.ResponseStatusCodes;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

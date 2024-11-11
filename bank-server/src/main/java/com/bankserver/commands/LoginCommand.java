@@ -6,9 +6,9 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
-import com.nyle.SecureBanking;
-import com.nyle.SecuredMessage;
-import com.nyle.enumerations.MessageHeaders;
+import com.security.SecureBanking;
+import com.security.SecuredMessage;
+import com.security.enumerations.MessageHeaders;
 
 public class LoginCommand implements Command{
     private Bank bank = Bank.getBankInstance();
@@ -26,7 +26,7 @@ public class LoginCommand implements Command{
     }
 
     public boolean checkCredentials() {
-        HashMap<MessageHeaders, String> credentials = secure.decryptAndVerifyMessage(message);
+        HashMap<MessageHeaders, String> credentials = secure.decryptAndVerifyMessage(message); //doesn't have session key yet
         if(credentials == null)
             return false;
         BankUser user = bank.getBankUser(credentials.get(MessageHeaders.CARDNUM));

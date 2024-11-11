@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ATM",
+            "request": "launch",
+            "mainClass": "com.nyle/com.atm.ATM",
+            "projectName": "bankatm"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -23,7 +30,9 @@
             "request": "launch",
             "mainClass": "com.nyle/com.nyle.ATM",
             "projectName": "bankatm",
-            "args": ["atm_data1.txt"]
+            "args": [
+                "ATM1"
+            ]
         },
         {
             "type": "java",
@@ -36,7 +45,6 @@
             "type": "java",
             "name": "Main",
             "request": "launch",
-            "mainClass": "com.nyle.Main",
             "projectName": "securinyle"
         }
     ]

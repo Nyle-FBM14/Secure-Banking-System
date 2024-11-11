@@ -14,14 +14,14 @@ import java.util.HashMap;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.nyle.RSA;
-import com.nyle.SecureBanking;
-import com.nyle.SecuredMessage;
-import com.nyle.SecurityUtils;
-import com.nyle.Utils;
-import com.nyle.enumerations.Algorithms;
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.RequestTypes;
+import com.security.RSA;
+import com.security.SecureBanking;
+import com.security.SecuredMessage;
+import com.security.SecurityUtils;
+import com.security.Utils;
+import com.security.enumerations.Algorithms;
+import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.RequestTypes;
 
 public class ConnectCommand implements Command {
     private ObjectInputStream in;
@@ -43,7 +43,7 @@ public class ConnectCommand implements Command {
     }
     private void getInitialKey() throws Exception{ //reads id and initial key from txt file
         String atmData;
-        BufferedReader reader = new BufferedReader(new FileReader("bankatm\\src\\main\\resources\\com\\nyle\\atm_" + id + "_data.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader("bankatm\\src\\main\\resources\\com\\atm\\atm_" + id + "_data.txt"));
         while((atmData = reader.readLine()) != null) {
             String[] data = atmData.split(",");
             this.initialKey = new SecretKeySpec(Base64.getDecoder().decode(data[1]), "AES");
@@ -51,7 +51,7 @@ public class ConnectCommand implements Command {
         reader.close();
     }
     private void setInitialKey(String key) throws Exception {
-        BufferedWriter writer = new BufferedWriter(new FileWriter("bankatm\\src\\main\\resources\\com\\nyle\\atm_" + id + "_data.txt"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("bankatm\\src\\main\\resources\\com\\atm\\atm_" + id + "_data.txt"));
         writer.write(id + "," + key);
         writer.close();
     }

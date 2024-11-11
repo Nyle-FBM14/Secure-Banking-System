@@ -15,16 +15,15 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import com.atm.commands.Command;
 import com.atm.commands.ConnectCommand;
 import com.atm.controllers.Controller;
-import com.nyle.SecureBanking;
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.RequestTypes;
+import com.security.SecureBanking;
+import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.RequestTypes;
 
 public class ATM extends Application {
 
-    private static String id;
+    private static String id = "ATM1";
     private static Scene scene;
     /*
         I think it's better to just make getter methods for the Object Input/Output Streams.
@@ -93,6 +92,7 @@ public class ATM extends Application {
         int portNumber = 15777;
         if(args.length == 1){
             id = args[0];
+            System.out.println(id);
         }
         try (
                 Socket socket = new Socket(hostName, portNumber);

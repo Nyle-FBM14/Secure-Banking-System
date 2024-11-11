@@ -12,9 +12,9 @@ import com.bankserver.commands.EndCommand;
 import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
-import com.nyle.SecureBanking;
-import com.nyle.SecuredMessage;
-import com.nyle.enumerations.MessageHeaders;
+import com.security.SecureBanking;
+import com.security.SecuredMessage;
+import com.security.enumerations.MessageHeaders;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;

@@ -2,9 +2,13 @@ package com.atm.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
 
 import com.atm.ATMModel;
-import com.nyle.SecureBanking;
+import com.security.SecureBanking;
+import com.security.SecuredMessage;
+import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.RequestTypes;
 
 public class LogoutCommand implements Command{
     private ATMModel model = ATMModel.getATMModelInstance();
@@ -22,8 +26,16 @@ public class LogoutCommand implements Command{
 
     @Override
     public void execute() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        try {
+            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
+            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.LOGOUT.toString());
+            SecuredMessage message = secure.encryptAndSignMessage(request);
+            out.writeObject(message);
+            out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //secure banking needs a way to reset session keys
     }
     
 }

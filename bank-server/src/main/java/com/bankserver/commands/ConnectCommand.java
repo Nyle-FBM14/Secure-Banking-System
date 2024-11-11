@@ -7,16 +7,19 @@ import java.security.PublicKey;
 import java.util.Base64;
 import java.util.HashMap;
 
+import javax.crypto.SecretKey;
+
 import com.bankserver.Atm;
 import com.bankserver.Bank;
-import com.nyle.AES;
-import com.nyle.SecureBanking;
-import com.nyle.SecuredMessage;
-import com.nyle.SecurityUtils;
-import com.nyle.Utils;
-import com.nyle.enumerations.Algorithms;
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.ResponseStatusCodes;
+import com.security.AES;
+import com.security.RSA;
+import com.security.SecureBanking;
+import com.security.SecuredMessage;
+import com.security.SecurityUtils;
+import com.security.Utils;
+import com.security.enumerations.Algorithms;
+import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.ResponseStatusCodes;
 
 public class ConnectCommand implements Command{
     private Bank bank = Bank.getBankInstance();
@@ -32,34 +35,41 @@ public class ConnectCommand implements Command{
         this.secure = secure;
     }
 
+    @SuppressWarnings("unchecked")
     public void initialExchange() throws Exception {
         //atm: ID || n
         String id = request.get(MessageHeaders.ID);
         String nonce = request.get(MessageHeaders.NONCE);
         Atm atm = bank.getAtm(id);
-        
+        SecretKey initialKey = atm.getInitialkey();
+
         //bank: E(initialKey, puBK || f(n) || initialKey')
         HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
         response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
         PublicKey bankPuKey = secure.getPublicKey();
         response.put(MessageHeaders.RESPONSE, Base64.getEncoder().encodeToString(bankPuKey.getEncoded())); //rebuild securinyle
         nonce = secure.nonceFunction(nonce);
-        request.put(MessageHeaders.NONCE, nonce);
-        request.put(MessageHeaders.SESSIONKEY, Utils.keyToString(AES.generateKey()));
-        byte[] res = SecurityUtils.encrypt(response, atm.getSecretkey(), Algorithms.AES.INSTANCE);
+        response.put(MessageHeaders.NONCE, nonce);
+
+        //new initial key
+        atm.newInitialKey();
+        response.put(MessageHeaders.SESSIONKEY, Utils.keyToString(atm.getInitialkey()));
+        byte[] res = SecurityUtils.encrypt(response, initialKey, Algorithms.AES.INSTANCE);
         out.writeObject(res);
         out.flush();
+        bank.writeAtms();
 
         //atm: E(initialKey, puAK)
         byte[] atmResponse = (byte[]) in.readObject();
-        PublicKey atmPuKey = (PublicKey) SecurityUtils.decrypt(atmResponse, atm.getSecretkey(), Algorithms.AES.INSTANCE);
+        request = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(atmResponse, initialKey, Algorithms.AES.INSTANCE);
+        PublicKey atmPuKey = RSA.stringToPublicKey(request.get(MessageHeaders.RESPONSE));
         secure.setpublicKeyPartner(atmPuKey);
 
         //bank: 200
         response = new HashMap<MessageHeaders, String>();
         response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
         response.put(MessageHeaders.RESPONSECODE, ResponseStatusCodes.SUCCESS.toString());
-        res = SecurityUtils.encrypt(response, atm.getSecretkey(), Algorithms.AES.INSTANCE);
+        res = SecurityUtils.encrypt(response, initialKey, Algorithms.AES.INSTANCE);
         out.writeObject(res);
         out.flush();
 
@@ -90,6 +100,7 @@ public class ConnectCommand implements Command{
             initialExchange();
             generateMasterKey();
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Connection failed");
         }
     }

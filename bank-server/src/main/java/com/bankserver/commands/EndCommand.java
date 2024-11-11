@@ -4,8 +4,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
-import com.nyle.enumerations.MessageHeaders;
-import com.nyle.enumerations.ResponseStatusCodes;
+import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.ResponseStatusCodes;
 
 public class EndCommand implements Command {
     @SuppressWarnings("unused")
