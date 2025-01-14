@@ -7,5 +7,6 @@ public enum RequestTypes {
     WITHDRAW,
     CHECK_BALANCE,
     LOGOUT,
-    END
+    END,
+    REGISTER
 }

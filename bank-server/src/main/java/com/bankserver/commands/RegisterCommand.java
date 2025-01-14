@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
+import com.security.Message;
 import com.security.enumerations.MessageHeaders;
 import com.security.enumerations.ResponseStatusCodes;
 
@@ -14,9 +15,9 @@ public class RegisterCommand implements Command{
     @SuppressWarnings("unused")
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private HashMap<MessageHeaders, String> request;
+    private Message request;
 
-    public RegisterCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request) {
+    public RegisterCommand (ObjectInputStream in, ObjectOutputStream out, Message request) {
         this.in = in;
         this.out = out;
         this.request = request;

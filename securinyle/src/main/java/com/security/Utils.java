@@ -51,4 +51,9 @@ public class Utils {
         int nonce = random.nextInt();
         return Integer.toString(nonce);
     }
+    public static String nonceFunction(String nonceString) {
+        long nonce = Long.parseLong(nonceString);
+        nonce = ((nonce + 37) * 7) / (nonce + 3);
+        return Long.toString(nonce);
+    }
 }

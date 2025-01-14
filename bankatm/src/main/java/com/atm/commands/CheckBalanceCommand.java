@@ -29,12 +29,12 @@ public class CheckBalanceCommand implements Command {
             request.put(MessageHeaders.REQUESTTYPE, RequestTypes.CHECK_BALANCE.toString());
             request.put(MessageHeaders.CARDNUM, model.getCardNum());
             request.put(MessageHeaders.PIN, model.getPin());
-            SecuredMessage message = secure.encryptAndSignMessage(request);
+            SecuredMessage message = secure.encryptAndSignMessage(request, true);
             out.writeObject(message);
             out.flush();
 
             message = (SecuredMessage) in.readObject();
-            HashMap<MessageHeaders, String> response = secure.decryptAndVerifyMessage(message);
+            HashMap<MessageHeaders, String> response = secure.decryptAndVerifyMessage(message, true);
             System.out.println(response.get(MessageHeaders.RESPONSECODE));
 
             System.out.println(response.get(MessageHeaders.RESPONSE));

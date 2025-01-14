@@ -12,9 +12,11 @@ import com.bankserver.commands.EndCommand;
 import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.RegisterCommand;
 import com.bankserver.commands.WithdrawCommand;
+import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
 import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.RequestTypes;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;
@@ -28,20 +30,19 @@ public class AtmHandler extends Thread {
 
     private boolean connectionLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception {
         while(true) {
-            @SuppressWarnings("unchecked")
-            HashMap<MessageHeaders, String> request = (HashMap<MessageHeaders, String>) in.readObject();
+            Message inMessage = (Message) in.readObject();
             Command command = null;
-            switch (request.get(MessageHeaders.REQUESTTYPE)) {
-                case "SECURE_CONNECTION":
-                    command = new ConnectCommand(in, out, request, secure);
+            switch (inMessage.getRequestType()) {
+                case RequestTypes.SECURE_CONNECTION:
+                    command = new ConnectCommand(in, out, inMessage, secure);
                     command.execute();
                     return true;
-                case "REGISTER":
-                    command = new RegisterCommand(in, out, request);
+                case RequestTypes.REGISTER:
+                    command = new RegisterCommand(in, out, inMessage);
                     command.execute();
                     break;
-                case "END":
-                    command = new EndCommand(in, out, request);
+                case RequestTypes.END:
+                    command = new EndCommand(in, out, inMessage);
                     command.execute();
                     return false;
             }
@@ -50,7 +51,8 @@ public class AtmHandler extends Thread {
     private boolean loginLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception {
         while(true) {
             SecuredMessage message = (SecuredMessage) in.readObject();
-            HashMap<MessageHeaders, String> request = secure.decryptAndVerifyMessage(message);
+            HashMap<MessageHeaders, String> request = secure.decryptAndVerifyMessage(message, false);
+            System.out.println(request);
             if(request != null) {
                 Command command = null;
                 switch (request.get(MessageHeaders.REQUESTTYPE)) {
@@ -62,6 +64,8 @@ public class AtmHandler extends Thread {
                         command = new EndCommand(in, out, request);
                         command.execute();
                         return false;
+                    default:
+                        System.out.println("default");
                 }
             }
             
@@ -77,7 +81,7 @@ public class AtmHandler extends Thread {
                 boolean online = loginLoop(in, out);
                 while(online){
                     SecuredMessage message = (SecuredMessage) in.readObject();
-                    HashMap<MessageHeaders, String> request = secure.decryptAndVerifyMessage(message);
+                    HashMap<MessageHeaders, String> request = secure.decryptAndVerifyMessage(message, true);
                     if(request == null)
                         continue;
                     

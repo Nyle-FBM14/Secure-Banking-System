@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
+import com.security.Message;
 import com.security.enumerations.MessageHeaders;
 import com.security.enumerations.ResponseStatusCodes;
 
@@ -11,9 +12,9 @@ public class EndCommand implements Command {
     @SuppressWarnings("unused")
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private HashMap<MessageHeaders, String> request;
+    private Message request;
 
-    public EndCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request) {
+    public EndCommand (ObjectInputStream in, ObjectOutputStream out, Message request) {
         this.in = in;
         this.out = out;
         this.request = request;

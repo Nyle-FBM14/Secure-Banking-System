@@ -45,7 +45,7 @@ public class CheckBalanceCommand implements Command {
                 response.put(MessageHeaders.RESPONSE, Double.toString(balance));
                 System.out.println(String.format("Balance of account with card number %s is $%f.", cardNum, balance));
             }
-            SecuredMessage message = secure.encryptAndSignMessage(response);
+            SecuredMessage message = secure.encryptAndSignMessage(response, true);
             out.writeObject(message);
             out.flush();
         } catch (Exception e) {

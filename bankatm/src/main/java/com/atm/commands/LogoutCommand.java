@@ -29,7 +29,7 @@ public class LogoutCommand implements Command{
         try {
             HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
             request.put(MessageHeaders.REQUESTTYPE, RequestTypes.LOGOUT.toString());
-            SecuredMessage message = secure.encryptAndSignMessage(request);
+            SecuredMessage message = secure.encryptAndSignMessage(request, true);
             out.writeObject(message);
             out.flush();
         } catch (Exception e) {

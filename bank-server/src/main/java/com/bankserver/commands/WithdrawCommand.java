@@ -46,7 +46,7 @@ public class WithdrawCommand implements Command {
                 response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
                 System.out.println(String.format("Withdrew $&f from account with card number %s", withdrawAmount, cardNum));
             }
-            SecuredMessage message = secure.encryptAndSignMessage(response);
+            SecuredMessage message = secure.encryptAndSignMessage(response, true);
             out.writeObject(message);
             out.flush();
         } catch (Exception e) {

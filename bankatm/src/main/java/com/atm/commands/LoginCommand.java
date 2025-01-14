@@ -36,11 +36,12 @@ public class LoginCommand implements Command{
             SecuredMessage credsMessage = secure.generateCredentialsMessage(credentials);
             out.writeObject(credsMessage);
             out.flush();
-
+            System.out.println("sent creds");
             //assumes correct credentials for now
             SecuredMessage keys = (SecuredMessage) in.readObject();
             secure.getDerivedKeys(keys);
             model.setCredentials(cardNum, pin);
+            System.out.println("got keys");
         } catch (Exception e) {
             e.printStackTrace();
         }

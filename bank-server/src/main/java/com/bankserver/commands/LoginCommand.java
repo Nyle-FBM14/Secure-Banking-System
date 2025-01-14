@@ -26,7 +26,7 @@ public class LoginCommand implements Command{
     }
 
     public boolean checkCredentials() {
-        HashMap<MessageHeaders, String> credentials = secure.decryptAndVerifyMessage(message); //doesn't have session key yet
+        HashMap<MessageHeaders, String> credentials = secure.decryptAndVerifyMessage(message, false); //doesn't have session key yet
         if(credentials == null)
             return false;
         BankUser user = bank.getBankUser(credentials.get(MessageHeaders.CARDNUM));
@@ -36,6 +36,7 @@ public class LoginCommand implements Command{
     public void execute() {
         try {
             if(!checkCredentials()){ //send response code
+                System.out.println("failed");
                 return;
             }
             secure.generateMasterSessionKey(message);

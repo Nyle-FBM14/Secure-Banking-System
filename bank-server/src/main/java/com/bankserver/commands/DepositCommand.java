@@ -46,7 +46,7 @@ public class DepositCommand implements Command{
                 response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
                 System.out.println(String.format("Deposited $&f into account with card number %s", depositAmount, cardNum));
             }
-            SecuredMessage message = secure.encryptAndSignMessage(response);
+            SecuredMessage message = secure.encryptAndSignMessage(response, true);
             out.writeObject(message);
             out.flush();
         } catch (Exception e) {

@@ -33,12 +33,12 @@ public class DepositCommand implements Command {
             request.put(MessageHeaders.PIN, model.getPin());
             request.put(MessageHeaders.DEPOSITAMOUNT, amount);
 
-            SecuredMessage message = secure.encryptAndSignMessage(request);
+            SecuredMessage message = secure.encryptAndSignMessage(request, true);
             out.writeObject(message);
             out.flush();
 
             message = (SecuredMessage) in.readObject();
-            HashMap<MessageHeaders, String> response = secure.decryptAndVerifyMessage(message);
+            HashMap<MessageHeaders, String> response = secure.decryptAndVerifyMessage(message, true);
             System.out.println(response.get(MessageHeaders.RESPONSECODE));
         } catch (Exception e) {
             e.printStackTrace();

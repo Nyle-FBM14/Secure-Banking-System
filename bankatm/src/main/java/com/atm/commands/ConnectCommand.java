@@ -6,34 +6,32 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.Key;
 import java.security.KeyPair;
-import java.security.PublicKey;
 import java.util.Base64;
-import java.util.HashMap;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.security.RSA;
+import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
 import com.security.SecurityUtils;
 import com.security.Utils;
 import com.security.enumerations.Algorithms;
-import com.security.enumerations.MessageHeaders;
 import com.security.enumerations.RequestTypes;
 
 public class ConnectCommand implements Command {
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private SecureBanking secure;
+    //private SecureBanking secure;
     private SecretKey initialKey;
     private String id;
 
-    public ConnectCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, String id) {
+    public ConnectCommand(ObjectInputStream in, ObjectOutputStream out, String id) {
         this.in = in;
         this.out = out;
-        this.secure = secure;
+        //this.secure = secure;
         this.id = id;
         try {
             getInitialKey();
@@ -50,46 +48,12 @@ public class ConnectCommand implements Command {
         }
         reader.close();
     }
-    private void setInitialKey(String key) throws Exception {
+    private void setInitialKey(Key key) throws Exception {
         BufferedWriter writer = new BufferedWriter(new FileWriter("bankatm\\src\\main\\resources\\com\\atm\\atm_" + id + "_data.txt"));
-        writer.write(id + "," + key);
+        writer.write(id + "," + Utils.keyToString(key));
         writer.close();
     }
-    @SuppressWarnings("unchecked")
-    public void initialExchange() throws Exception {
-        //atm: ID || n
-        String nonce = Utils.generateNonce();
-        HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-        request.put(MessageHeaders.REQUESTTYPE, RequestTypes.SECURE_CONNECTION.toString());
-        request.put(MessageHeaders.ID, id);
-        request.put(MessageHeaders.NONCE, nonce);
-        out.writeObject(request);
-        out.flush();
-
-        //bank: E(initialKey, puBK || f(n) || initialKey')
-        byte[] response = (byte[]) in.readObject();
-        HashMap<MessageHeaders, String> bankMessage = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(response, initialKey, Algorithms.AES.INSTANCE);
-        nonce = secure.nonceFunction(nonce);
-        if(!nonce.equals(bankMessage.get(MessageHeaders.NONCE)))
-            return;
-        PublicKey bankPuKey = RSA.stringToPublicKey(bankMessage.get(MessageHeaders.RESPONSE));
-        secure.setpublicKeyPartner(bankPuKey);
-        setInitialKey(bankMessage.get(MessageHeaders.SESSIONKEY));
-
-        //atm: E(initialKey, puAK)
-        request = new HashMap<MessageHeaders, String>();
-        PublicKey atmPuKey = secure.getPublicKey();
-        request.put(MessageHeaders.RESPONSE, Base64.getEncoder().encodeToString(atmPuKey.getEncoded())); //rebuild securinyle
-        byte[] req = SecurityUtils.encrypt(request, initialKey, Algorithms.AES.INSTANCE);
-        out.writeObject(req);
-        out.flush();
-
-        //bank: 200
-        response = (byte[]) in.readObject();
-        bankMessage = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(response, initialKey, Algorithms.AES.INSTANCE);
-        System.out.println(bankMessage.get(MessageHeaders.RESPONSECODE));
-    }
-
+    /*
     public void generateMasterKey() throws Exception {
         //exchange primes
         SecuredMessage dhPrimeMssg = secure.generateDHPrimeMessage();
@@ -106,16 +70,27 @@ public class ConnectCommand implements Command {
 
         //generate masterkey
         secure.generateMasterKey(bankdhPuKeyMssg, kp.getPrivate());
-    }
+    }*/
     @Override
     public void execute() {
         try {
-            initialExchange();
-            generateMasterKey();
+            //atm: ID || n
+            Message outMessage = new Message(RequestTypes.SECURE_CONNECTION, id, 0, null, Utils.generateNonce(), null);
+            out.writeObject(outMessage);
+            out.flush();
+
+            //bank: E(initialKey, f(n) || initialKey')
+            byte[] response = (byte[]) in.readObject();
+            Message inMessage = (Message) SecurityUtils.decrypt(response, initialKey, Algorithms.AES.INSTANCE);
+            if(!Utils.nonceFunction(outMessage.getNonce()).equals(inMessage.getNonce())) { //retry mechanism
+                System.out.println("Nonce does not match.");
+                return;
+            }
+            setInitialKey(inMessage.getKey());
+
+            //acknowledgements?
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
     }
-    
 }

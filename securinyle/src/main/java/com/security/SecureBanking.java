@@ -43,7 +43,8 @@ public class SecureBanking {
         this.publicKeyPartner = publicKeyPartner;
     }
 
-    public SecuredMessage generateDHPrimeMessage() { //maybe generalize A
+    
+    public SecuredMessage generateDHPrimeMessage() {
         BigInteger prime = Utils.generateLargePrime();
         byte[] signedPrime = RSA.signDigitalSignature(privateKey, prime);
         return new SecuredMessage(Utils.serialize(prime), signedPrime);
@@ -69,7 +70,7 @@ public class SecureBanking {
         }
         return null;
     }
-    public SecuredMessage generateDHPublicKeyMessage(PublicKey key) { //maybe generalize A
+    public SecuredMessage generateDHPublicKeyMessage(PublicKey key) { 
         byte[] signedKey = RSA.signDigitalSignature(privateKey, key);
         return new SecuredMessage(Utils.serialize(key), signedKey);
     }
@@ -83,6 +84,7 @@ public class SecureBanking {
                 byte[] sharedKey = keyAgree.generateSecret();
                 MessageDigest hashFunction = MessageDigest.getInstance(Algorithms.HASH256.INSTANCE);
                 masterKey = new SecretKeySpec(hashFunction.digest(sharedKey), Algorithms.AES.INSTANCE);
+                System.out.println(masterKey);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -90,6 +92,7 @@ public class SecureBanking {
     }
 
     public SecuredMessage generateCredentialsMessage(HashMap<MessageHeaders, String> credentials) { //unique to atm
+        System.out.println(credentials);
         byte[] encryptedMessage = SecurityUtils.encrypt(credentials, masterKey, Algorithms.AES.INSTANCE);
         byte[] mac = SecurityUtils.makeMac(credentials, masterKey);
         return new SecuredMessage(encryptedMessage, mac);
@@ -147,12 +150,21 @@ public class SecureBanking {
         return false;
     }
 
-    public SecuredMessage encryptAndSignMessage(HashMap<MessageHeaders, String> message) {
+    public SecuredMessage encryptAndSignMessage(HashMap<MessageHeaders, String> message, boolean isLoggedIn) {
         SecuredMessage sMessage = null;
-        message.put(MessageHeaders.NONCE, Utils.generateNonce());
+        SecretKey key, mac;
+        if(isLoggedIn) {
+            key = sessionKey;
+            mac = macKey;
+        }
+        else {
+            key = masterKey;
+            mac = masterKey;
+        }
+        //message.put(MessageHeaders.NONCE, Utils.generateNonce());
         try {
-            byte[] encryptedMessage = SecurityUtils.encrypt(message, sessionKey, Algorithms.AES.INSTANCE);
-            byte[] messageMac = SecurityUtils.makeMac(message, macKey);
+            byte[] encryptedMessage = SecurityUtils.encrypt(message, key, Algorithms.AES.INSTANCE);
+            byte[] messageMac = SecurityUtils.makeMac(message, mac);
             sMessage = new SecuredMessage(encryptedMessage, messageMac);
         } catch (Exception e) {
             e.printStackTrace();
@@ -160,21 +172,31 @@ public class SecureBanking {
         return sMessage;
     }
     @SuppressWarnings("unchecked")
-    public HashMap<MessageHeaders, String> decryptAndVerifyMessage(SecuredMessage message) {
-        HashMap<MessageHeaders, String> decryptedMessage = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(message.getMessage(), sessionKey, Algorithms.AES.INSTANCE);
-        if(SecurityUtils.verifyMac(decryptedMessage, message.getMessageIntegrityAuthentication(), macKey) && !usedNonces.contains(decryptedMessage.get(MessageHeaders.NONCE))) {
-            usedNonces.add(decryptedMessage.get(MessageHeaders.NONCE));
-            decryptedMessage.remove(MessageHeaders.NONCE);
+    public HashMap<MessageHeaders, String> decryptAndVerifyMessage(SecuredMessage message, boolean isLoggedIn) {
+        SecretKey key, mac;
+        if(isLoggedIn) {
+            key = sessionKey;
+            mac = macKey;
+        }
+        else {
+            key = masterKey;
+            mac = masterKey;
+            System.out.println("heh");
+        }
+        HashMap<MessageHeaders, String> decryptedMessage = (HashMap<MessageHeaders, String>) SecurityUtils.decrypt(message.getMessage(), key, Algorithms.AES.INSTANCE);
+        System.out.println(decryptedMessage);
+        if(SecurityUtils.verifyMac(decryptedMessage, message.getMessageIntegrityAuthentication(), mac)) { // && !usedNonces.contains(decryptedMessage.get(MessageHeaders.NONCE))
+            //usedNonces.add(decryptedMessage.get(MessageHeaders.NONCE));
+            //decryptedMessage.remove(MessageHeaders.NONCE);
             return decryptedMessage;
+        }
+        else{
+            System.out.println("weeweewoowoo");
         }
         return null;
     }
 
-    public String nonceFunction(String nonceString) {
-        long nonce = Long.parseLong(nonceString);
-        nonce = ((nonce + 37) * 7) / (nonce + 3);
-        return Long.toString(nonce);
-    }
+    
 
     public void resetSession() {
         masterSessionKey = null;
