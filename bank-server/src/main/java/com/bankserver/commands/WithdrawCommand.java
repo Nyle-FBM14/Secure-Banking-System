@@ -6,9 +6,11 @@ import java.util.HashMap;
 
 import com.bankserver.Bank;
 import com.bankserver.BankUser;
+import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
 import com.security.enumerations.MessageHeaders;
+import com.security.enumerations.RequestTypes;
 import com.security.enumerations.ResponseStatusCodes;
 
 public class WithdrawCommand implements Command {
@@ -16,38 +18,26 @@ public class WithdrawCommand implements Command {
     @SuppressWarnings("unused")
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private HashMap<MessageHeaders, String> request;
+    private Message message;
+    private BankUser user;
     private SecureBanking secure;
 
-    public WithdrawCommand (ObjectInputStream in, ObjectOutputStream out, HashMap<MessageHeaders, String> request, SecureBanking secure) {
+    public WithdrawCommand (ObjectInputStream in, ObjectOutputStream out, Message message, BankUser user, SecureBanking secure) {
         this.in = in;
         this.out = out;
-        this.request = request;
+        this.message = message;
+        this.user = user;
         this.secure = secure;
     }
 
     @Override
     public void execute() {
         try {
-            String cardNum = request.get(MessageHeaders.CARDNUM);
-            String pin = request.get(MessageHeaders.PIN);
-            double withdrawAmount = Double.parseDouble(request.get(MessageHeaders.WITHDRAWAMOUNT));
-
-            HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
-            response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
-
-            BankUser user = bank.getBankUser(cardNum);
-            if(user == null || !(user.authenticate(pin))) { //invalid card or pin
-                System.out.println("Request attempt with invalid credentials.\nCard number: " + cardNum + "\nPin: " + pin);
-                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.ERROR.CODE));
-            }
-            else{
-                user.withdraw(withdrawAmount);
-                response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
-                System.out.println(String.format("Withdrew $&f from account with card number %s", withdrawAmount, cardNum));
-            }
-            SecuredMessage message = secure.encryptAndSignMessage(response, true);
-            out.writeObject(message);
+            user.withdraw(message.getAmount());
+            
+            message = new Message(RequestTypes.WITHDRAW, "Success", 0, null, null, null);
+            SecuredMessage sMessage = secure.encryptAndSignMessage(message);
+            out.writeObject(sMessage);
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();

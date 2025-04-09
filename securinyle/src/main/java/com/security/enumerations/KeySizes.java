@@ -5,7 +5,7 @@ public enum KeySizes {
     RSA_KEYGEN(2048),
     //DH_KEY(2048),
     DH_PRIME(2048),
-    MASTERSESSIONKEY_ITERATIONS(3737);
+    MASTERKEY_ITERATIONS(3737);
 
     public final int SIZE;
 

@@ -2,31 +2,25 @@ package com.bankserver.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-
 import com.security.Message;
-import com.security.enumerations.MessageHeaders;
-import com.security.enumerations.ResponseStatusCodes;
 
 public class EndCommand implements Command {
     @SuppressWarnings("unused")
     private ObjectInputStream in;
+    @SuppressWarnings("unused")
     private ObjectOutputStream out;
-    private Message request;
+    @SuppressWarnings("unused")
+    private Message message;
 
-    public EndCommand (ObjectInputStream in, ObjectOutputStream out, Message request) {
+    public EndCommand (ObjectInputStream in, ObjectOutputStream out, Message message) {
         this.in = in;
         this.out = out;
-        this.request = request;
+        this.message = message;
     }
     @Override
     public void execute() {
         try {
-            HashMap<MessageHeaders, String> response = new HashMap<MessageHeaders, String>();
-            response.put(MessageHeaders.REQUESTTYPE, request.get(MessageHeaders.REQUESTTYPE));
-            response.put(MessageHeaders.RESPONSECODE, Integer.toString(ResponseStatusCodes.SUCCESS.CODE));
-            out.writeObject(response);
-            out.flush();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

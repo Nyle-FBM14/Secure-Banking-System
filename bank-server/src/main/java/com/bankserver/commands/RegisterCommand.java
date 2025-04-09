@@ -2,19 +2,17 @@ package com.bankserver.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-
 import com.bankserver.Bank;
-import com.bankserver.BankUser;
 import com.security.Message;
-import com.security.enumerations.MessageHeaders;
-import com.security.enumerations.ResponseStatusCodes;
 
 public class RegisterCommand implements Command{
+    @SuppressWarnings("unused")
     private Bank bank = Bank.getBankInstance();
     @SuppressWarnings("unused")
     private ObjectInputStream in;
+    @SuppressWarnings("unused")
     private ObjectOutputStream out;
+    @SuppressWarnings("unused")
     private Message request;
 
     public RegisterCommand (ObjectInputStream in, ObjectOutputStream out, Message request) {
@@ -24,6 +22,7 @@ public class RegisterCommand implements Command{
     }
     @Override
     public void execute() {
+        /*
         try {
             String cardNum = request.get(MessageHeaders.CARDNUM);
             String pin = request.get(MessageHeaders.PIN);
@@ -43,6 +42,6 @@ public class RegisterCommand implements Command{
             System.out.println("Registered user with card num: " + cardNum);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } */
     }
 }

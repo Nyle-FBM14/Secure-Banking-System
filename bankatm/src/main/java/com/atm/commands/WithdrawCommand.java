@@ -2,16 +2,12 @@ package com.atm.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-
-import com.atm.ATMModel;
+import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
-import com.security.enumerations.MessageHeaders;
 import com.security.enumerations.RequestTypes;
 
 public class WithdrawCommand implements Command{
-    private ATMModel model = ATMModel.getATMModelInstance();
     private String amount;
     private ObjectInputStream in;
     private ObjectOutputStream out;
@@ -27,19 +23,14 @@ public class WithdrawCommand implements Command{
     @Override
     public void execute() {
         try {
-            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.WITHDRAW.toString());
-            request.put(MessageHeaders.CARDNUM, model.getCardNum());
-            request.put(MessageHeaders.PIN, model.getPin());
-            request.put(MessageHeaders.WITHDRAWAMOUNT, amount);
-            
-            SecuredMessage message = secure.encryptAndSignMessage(request, true);
-            out.writeObject(request);
+            Message message = new Message(RequestTypes.WITHDRAW, null, Double.parseDouble(amount), null, null, null);
+            SecuredMessage sMessage = secure.encryptAndSignMessage(message);
+            out.writeObject(sMessage);
             out.flush();
 
-            message = (SecuredMessage) in.readObject();
-            HashMap<MessageHeaders, String> response = secure.decryptAndVerifyMessage(message, true);
-            System.out.println(response.get(MessageHeaders.RESPONSECODE));
+            sMessage = (SecuredMessage) in.readObject();
+            message = secure.decryptAndVerifyMessage(sMessage);
+            System.out.println(message.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
