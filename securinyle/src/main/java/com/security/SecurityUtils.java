@@ -136,8 +136,7 @@ public class SecurityUtils {
         try {
             Mac mac = Mac.getInstance(Algorithms.MAC_HASH.INSTANCE);
             mac.init(macKey);
-            byte[] macBytes = mac.doFinal(Utils.serialize(message));
-            System.out.println(Base64.getEncoder().encodeToString(macBytes));
+            byte[] macBytes = mac.doFinal(serialize(message));
             return macBytes;
             //return Base64.getEncoder().encodeToString(macBytes); //for String - import java.util.Base64;
         } catch (Exception e) {

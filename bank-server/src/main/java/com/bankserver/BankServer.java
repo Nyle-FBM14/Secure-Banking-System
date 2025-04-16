@@ -13,9 +13,9 @@ public class BankServer {
         System.out.println("Port #: " + portNumber);
         
         boolean listening = true;
-        try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
+        try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
+            System.out.println("Server running...");
             while (listening) {
-                    System.out.println("Server running...");
 	            new AtmHandler(serverSocket.accept()).start();
 	        }
         }

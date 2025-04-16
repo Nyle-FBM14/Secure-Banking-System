@@ -23,7 +23,7 @@ public class DepositCommand implements Command {
     @Override
     public void execute() {
         try {
-            Message message = new Message(RequestTypes.DEPOSIT, null, Double.parseDouble(amount), null, null, null);
+            Message message = new Message(RequestTypes.DEPOSIT, null, Double.parseDouble(amount), null, null);
             SecuredMessage sMessage = secure.encryptAndSignMessage(message);
             out.writeObject(sMessage);
             out.flush();
@@ -32,6 +32,7 @@ public class DepositCommand implements Command {
             message = secure.decryptAndVerifyMessage(sMessage);
             System.out.println(message.getMessage());
         } catch (Exception e) {
+            System.out.println("Deposit failed");
             e.printStackTrace();
         }
     }

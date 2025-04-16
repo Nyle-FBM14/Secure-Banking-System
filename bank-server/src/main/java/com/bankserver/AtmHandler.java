@@ -2,10 +2,6 @@ package com.bankserver;
 
 import java.net.*;
 import java.io.*;
-import java.util.HashMap;
-
-import javax.crypto.SecretKey;
-
 import com.bankserver.commands.CheckBalanceCommand;
 import com.bankserver.commands.Command;
 import com.bankserver.commands.ConnectCommand;
@@ -18,16 +14,13 @@ import com.bankserver.commands.WithdrawCommand;
 import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
-import com.security.SecurityUtils;
-import com.security.enumerations.Algorithms;
-import com.security.enumerations.MessageHeaders;
 import com.security.enumerations.RequestTypes;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;
     private Bank bank = Bank.getBankInstance();
     private SecureBanking secure = new SecureBanking();
-    BankUser user;
+    public static BankUser user;
 
     public AtmHandler(Socket socket) {
         super("AtmHandler");
@@ -59,12 +52,12 @@ public class AtmHandler extends Thread {
     private boolean loginLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception {
         while(true) {
             SecuredMessage sMessage = (SecuredMessage) in.readObject();
-            Message message = (Message) secure.decryptAndVerifyMessage(sMessage);
+            Message message = secure.decryptAndVerifyMessage(sMessage);
             if(message != null) {
                 Command command = null;
                 switch (message.getRequestType()) {
                     case RequestTypes.LOGIN:
-                        command = new LoginCommand(in, out, secure, message, user);
+                        command = new LoginCommand(in, out, secure, message);
                         command.execute();
                         return true;
                     case RequestTypes.END:
@@ -93,19 +86,19 @@ public class AtmHandler extends Thread {
                         continue;
                     
                     Command command = null;
-                    System.out.println("\n****************Command received: " + message.getRequestType().toString());
+                    System.out.println("\n****************\nCommand received: " + message.getRequestType().toString());
                     switch(message.getRequestType()){
                         case RequestTypes.DEPOSIT: //deposit
-                            command = new DepositCommand(in, out, message, user, secure);
+                            command = new DepositCommand(in, out, message, secure);
                             break;
                         case RequestTypes.WITHDRAW: //withdraw
-                            command = new WithdrawCommand(in, out, message, user, secure);
+                            command = new WithdrawCommand(in, out, message, secure);
                             break;
                         case RequestTypes.CHECK_BALANCE: //check balanace
-                            command = new CheckBalanceCommand(in, out, message, user, secure);
+                            command = new CheckBalanceCommand(in, out, message, secure);
                             break;
                         case RequestTypes.LOGOUT: //client logout
-                            command = new LogoutCommand(in, out, message, user, secure);
+                            command = new LogoutCommand(in, out, message, secure);
                             online = loginLoop(in, out);
                             break;
                         case RequestTypes.END: //atm or program that registers users terminates their connection

@@ -23,7 +23,7 @@ public class WithdrawCommand implements Command{
     @Override
     public void execute() {
         try {
-            Message message = new Message(RequestTypes.WITHDRAW, null, Double.parseDouble(amount), null, null, null);
+            Message message = new Message(RequestTypes.WITHDRAW, null, Double.parseDouble(amount), null, null);
             SecuredMessage sMessage = secure.encryptAndSignMessage(message);
             out.writeObject(sMessage);
             out.flush();
@@ -32,7 +32,7 @@ public class WithdrawCommand implements Command{
             message = secure.decryptAndVerifyMessage(sMessage);
             System.out.println(message.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Withdraw failed");
         }
     }
     

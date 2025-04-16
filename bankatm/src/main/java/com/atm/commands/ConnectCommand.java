@@ -12,10 +12,11 @@ import java.util.Base64;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.security.AES;
 import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
-import com.security.Utils;
+import com.security.SecurityUtils;
 import com.security.enumerations.RequestTypes;
 
 public class ConnectCommand implements Command {
@@ -47,14 +48,14 @@ public class ConnectCommand implements Command {
     }
     private void setInitialKey(Key key) throws Exception {
         BufferedWriter writer = new BufferedWriter(new FileWriter("bankatm\\src\\main\\resources\\com\\atm\\atm_" + id + "_data.txt"));
-        writer.write(id + "," + Utils.keyToString(key));
+        writer.write(id + "," + SecurityUtils.keyToString(key));
         writer.close();
     }
     @Override
     public void execute() {
         try {
             //atm: ID || n
-            Message message = new Message(RequestTypes.SECURE_CONNECTION, id, 0, null, Utils.generateNonce(), null);
+            Message message = new Message(RequestTypes.SECURE_CONNECTION, id, 0, null, SecurityUtils.generateNonce());
             out.writeObject(message);
             out.flush();
 
@@ -63,11 +64,12 @@ public class ConnectCommand implements Command {
             //bank: E(initialKey, f(n) || initialKey')
             SecuredMessage sMessage = (SecuredMessage) in.readObject();
             message = secure.decryptAndVerifyMessage(sMessage);
-            setInitialKey(message.getKey());
+            
+            this.setInitialKey(AES.stringToKey(message.getMessage()));
 
             //acknowledgements?
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Connect failed");
         }
     }
 }

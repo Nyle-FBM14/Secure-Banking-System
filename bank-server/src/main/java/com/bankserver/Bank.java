@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import javax.crypto.SecretKey;
 
 import com.security.AES;
-import com.security.Utils;
+import com.security.SecurityUtils;
 
 public class Bank {
 
@@ -98,11 +98,12 @@ public class Bank {
             BufferedWriter writer = new BufferedWriter(atmFile);
             
             for(Atm a: atms) {
-                writer.write(a.getId() + "," + Utils.keyToString(a.getInitialkey()) + "\n");
+                writer.write(a.getId() + "," + SecurityUtils.keyToString(a.getInitialkey()) + "\n");
             }
             writer.close();
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("here");
         }
     }
 }

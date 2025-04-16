@@ -22,7 +22,7 @@ public class EndCommand implements Command {
         try {
             
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("End failed");
         }
     }
     

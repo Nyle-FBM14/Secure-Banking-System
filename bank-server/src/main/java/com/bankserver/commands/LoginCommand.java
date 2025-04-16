@@ -2,12 +2,13 @@ package com.bankserver.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.security.PublicKey;
+
+import com.bankserver.AtmHandler;
 import com.bankserver.Bank;
-import com.bankserver.BankUser;
 import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
+import com.security.SecurityUtils;
 import com.security.enumerations.RequestTypes;
 
 public class LoginCommand implements Command{
@@ -16,14 +17,12 @@ public class LoginCommand implements Command{
     private ObjectOutputStream out;
     private SecureBanking secure;
     private Message message;
-    private BankUser user;
 
-    public LoginCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, Message message, BankUser user) {
+    public LoginCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, Message message) {
         this.in = in;
         this.out = out;
         this.secure = secure;
         this.message = message;
-        this.user = user;
     }
 
     private String[] receiveCredentials() throws Exception {
@@ -32,12 +31,12 @@ public class LoginCommand implements Command{
         String cardNum = message.getMessage();
 
         //check if user exists
-        user = bank.getBankUser(cardNum);
-        if(user == null) {
-            message = new Message(RequestTypes.LOGIN, "No user found.", 0, null, null, null);
+        AtmHandler.user = bank.getBankUser(cardNum);
+        if(AtmHandler.user == null) {
+            message = new Message(RequestTypes.LOGIN, "No user found.", 0, null, null);
         }
         else{
-            message = new Message(RequestTypes.LOGIN, "Acknowledged.", 0, null, null, null);
+            message = new Message(RequestTypes.LOGIN, "Acknowledged.", 0, null, null);
         }
         sMessage = secure.encryptAndSignMessage(message);
         out.writeObject(sMessage);
@@ -49,11 +48,11 @@ public class LoginCommand implements Command{
         String pin = message.getMessage();
 
         //validate user
-        if(user.authenticate(pin)) {
-            message = new Message(RequestTypes.LOGIN, "Acknowledged.", 0, null, null, null);
+        if(AtmHandler.user.authenticate(pin)) {
+            message = new Message(RequestTypes.LOGIN, "Acknowledged.", 0, null, null);
         }
         else {
-            message = new Message(RequestTypes.LOGIN, "Invalid password.", 0, null, null, null);
+            message = new Message(RequestTypes.LOGIN, "Invalid password.", 0, null, null);
         }
         sMessage = secure.encryptAndSignMessage(message);
         out.writeObject(sMessage);
@@ -63,20 +62,31 @@ public class LoginCommand implements Command{
         return credentials;
     }
     private void dhExchange(String cardNum, String pin) throws Exception {
-        //receive atm public key
+        //receive prime
         SecuredMessage sMessage = (SecuredMessage) in.readObject();
         message = secure.decryptAndVerifyMessage(sMessage);
-        PublicKey atmPuK = (PublicKey) message.getKey();
-        
+        String p1 = message.getMessage();
+
+        //send prime
+        String p2 = SecurityUtils.generateLargePrime().toString();
+        message = new Message(RequestTypes.LOGIN, p2, 0, null, null);
+        out.writeObject(secure.encryptAndSignMessage(message));
+        out.flush();
+
         //generate DH keypair
-        secure.generateDHKeyPair(cardNum, pin);
+        secure.generateDHKeyPair(p1, p2);
+
+        //receive atm public key
+        sMessage = (SecuredMessage) in.readObject();
+        message = secure.decryptAndVerifyMessage(sMessage);
+        
         //send bank public key
         sMessage = secure.generateDHPublicKeyMessage();
         out.writeObject(sMessage);
         out.flush();
 
         //generate masterkey
-        secure.generateMasterKey(atmPuK);
+        secure.generateMasterKey(message.getMessage(), cardNum, pin);
     }
     private void generateAndSendSessionKeys() throws Exception {
         SecuredMessage sMessage = secure.deriveSessionAndMacKeysAndGenerateMessage();
@@ -90,7 +100,7 @@ public class LoginCommand implements Command{
             dhExchange(credentials[0], credentials[1]);
             generateAndSendSessionKeys();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Login failed");
         }
     }
 }

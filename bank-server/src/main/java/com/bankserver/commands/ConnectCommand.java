@@ -8,7 +8,7 @@ import com.bankserver.Atm;
 import com.bankserver.Bank;
 import com.security.Message;
 import com.security.SecureBanking;
-import com.security.Utils;
+import com.security.SecurityUtils;
 import com.security.enumerations.RequestTypes;
 
 public class ConnectCommand implements Command{
@@ -37,15 +37,14 @@ public class ConnectCommand implements Command{
 
             //bank: E(initialKey, puBK || f(n) || initialKey')
             atm.newInitialKey();
-            message = new Message(RequestTypes.SECURE_CONNECTION, "", 0, null, Utils.nonceFunction(message.getNonce()), atm.getInitialkey());
+            message = new Message(RequestTypes.SECURE_CONNECTION, SecurityUtils.keyToString(atm.getInitialkey()), 0, null, SecurityUtils.nonceFunction(message.getNonce()));
             out.writeObject(secure.encryptAndSignMessage(message));
             out.flush();
             bank.writeAtms(); //new initial key is recorded
 
             System.out.println("Connection secured with ATM ID " + atm.getId());
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Connection failed");
+            System.out.println("Connect failed");
         }
     }
 }

@@ -1,11 +1,16 @@
 package com.security;
 
 import java.math.BigInteger;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -25,11 +30,7 @@ public class SecureBanking {
     private KeyPair keypair; //for dh
 
     private boolean isLoggedIn = false;
-    /*
-    private PrivateKey privateKey;
-    private PublicKey publicKey;
-    private PublicKey publicKeyPartner;
-    */
+    @SuppressWarnings("unused")
     private ArrayList<String> usedNonces =  new ArrayList<String>();
 
     public void setInitialKey(SecretKey initialKey) {
@@ -44,11 +45,11 @@ public class SecureBanking {
         byte[] signedPrime = RSA.signDigitalSignature(privateKey, prime);
         return new SecuredMessage(Utils.serialize(prime), signedPrime);
     } */
-    public boolean generateDHKeyPair(String cardNum, String pin) {
-        BigInteger p1 = new BigInteger(cardNum);
-        BigInteger p2 = new BigInteger(pin);
+    public boolean generateDHKeyPair(String p1, String p2) {
+        BigInteger p = new BigInteger(p1);
+        BigInteger g = new BigInteger(p2);
 
-        DHParameterSpec dhSpecs = new DHParameterSpec(p1, p2, KeySizes.DH_PRIME.SIZE);
+        DHParameterSpec dhSpecs = new DHParameterSpec(p, g, KeySizes.DH_KEY.SIZE);
         try {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DH");
             keyGen.initialize(dhSpecs);
@@ -62,17 +63,30 @@ public class SecureBanking {
     }
     
     public SecuredMessage generateDHPublicKeyMessage() {
-        Message message = new Message(RequestTypes.LOGIN, null, 0, null, null, keypair.getPublic());
+        Message message = new Message(RequestTypes.LOGIN, SecurityUtils.keyToString(keypair.getPublic()), 0, null, null);
         return encryptAndSignMessage(message);
     }
-    public boolean generateMasterKey(PublicKey puKey) {
+    public boolean generateMasterKey(String puKeyString, String cardNum, String pin) {
         try {
+            MessageDigest hashFunction = MessageDigest.getInstance(Algorithms.HASH256.INSTANCE);
+
+            //convert key string to a public key
+            KeyFactory keyFactory = KeyFactory.getInstance("DH");
+            PublicKey puKey =  keyFactory.generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(puKeyString)));
+
+            //completing DH exchange and generating shared key
             KeyAgreement keyAgree = KeyAgreement.getInstance("DH");
             keyAgree.init(keypair.getPrivate());
             keyAgree.doPhase(puKey, true);
             byte[] sharedKey = keyAgree.generateSecret();
-            MessageDigest hashFunction = MessageDigest.getInstance(Algorithms.HASH256.INSTANCE);
-            masterKey = new SecretKeySpec(hashFunction.digest(sharedKey), Algorithms.AES.INSTANCE);
+
+            //mixing it up fr
+            sharedKey = hashFunction.digest(sharedKey);
+            String base = Arrays.toString(sharedKey) + cardNum + pin;
+            sharedKey = hashFunction.digest(base.getBytes());
+
+            //generating masterkey
+            masterKey = new SecretKeySpec(sharedKey, Algorithms.AES.INSTANCE);
             System.out.println(masterKey);
             return true;
         } catch (Exception e) {
@@ -108,17 +122,16 @@ public class SecureBanking {
         SecuredMessage sMessage = null;
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-
             //session key
-            PBEKeySpec spec = new PBEKeySpec(Utils.keyToString(masterKey).toCharArray(), Utils.generateSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
+            PBEKeySpec spec = new PBEKeySpec(SecurityUtils.keyToString(masterKey).toCharArray(), SecurityUtils.generateSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
             sessionKey = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), Algorithms.AES.INSTANCE);
             //mac key
-            spec = new PBEKeySpec(Utils.keyToString(masterKey).toCharArray(), Utils.generateSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
+            spec = new PBEKeySpec(SecurityUtils.keyToString(masterKey).toCharArray(), SecurityUtils.generateSalt(), KeySizes.MASTERKEY_ITERATIONS.SIZE, KeySizes.AES.SIZE);
             macKey = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), Algorithms.AES.INSTANCE);
 
             //creating message
-            String keys = Utils.keyToString(sessionKey) + " " + Utils.keyToString(macKey);
-            Message message = new Message(RequestTypes.LOGIN, keys, 0, null, null, null);
+            String keys = SecurityUtils.keyToString(sessionKey) + " " + SecurityUtils.keyToString(macKey);
+            Message message = new Message(RequestTypes.LOGIN, keys, 0, null, null);
             byte[] encryptedMessage = SecurityUtils.encrypt(message, masterKey, Algorithms.AES.INSTANCE);
             byte[] messageMac = SecurityUtils.makeMac(message, masterKey);
             sMessage = new SecuredMessage(encryptedMessage, messageMac);
@@ -155,13 +168,10 @@ public class SecureBanking {
             key = initialKey;
             mac = initialKey;
         }
-        try {
-            byte[] encryptedMessage = SecurityUtils.encrypt(message, key, Algorithms.AES.INSTANCE);
-            byte[] messageMac = SecurityUtils.makeMac(message, mac);
-            sMessage = new SecuredMessage(encryptedMessage, messageMac);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        byte[] encryptedMessage = SecurityUtils.encrypt(message, key, Algorithms.AES.INSTANCE);
+        byte[] messageMac = SecurityUtils.makeMac(message, mac);
+        sMessage = new SecuredMessage(encryptedMessage, messageMac);
+        
         return sMessage;
     }
     
@@ -172,8 +182,8 @@ public class SecureBanking {
             mac = macKey;
         }
         else {
-            key = masterKey;
-            mac = masterKey;
+            key = initialKey;
+            mac = initialKey;
         }
         Message decryptedMessage = (Message) SecurityUtils.decrypt(message.getMessage(), key, Algorithms.AES.INSTANCE);
         if(SecurityUtils.verifyMac(decryptedMessage, message.getMessageIntegrityAuthentication(), mac)) { // && !usedNonces.contains(decryptedMessage.get(MessageHeaders.NONCE))

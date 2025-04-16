@@ -23,7 +23,7 @@ public class CheckBalanceCommand implements Command {
     @Override
     public void execute() {
         try {
-            Message message = new Message(RequestTypes.CHECK_BALANCE, null, 0, null, null, null);
+            Message message = new Message(RequestTypes.CHECK_BALANCE, null, 0, null, null);
             SecuredMessage sMessage = secure.encryptAndSignMessage(message);
             out.writeObject(sMessage);
             out.flush();
@@ -32,7 +32,7 @@ public class CheckBalanceCommand implements Command {
             message = secure.decryptAndVerifyMessage(sMessage);
             model.setBalance(String.valueOf(message.getAmount()));
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Check balance failed");
         }
     }
     

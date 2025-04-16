@@ -21,13 +21,13 @@ public class LogoutCommand implements Command{
     @Override
     public void execute() {
         try {
-            Message message = new Message(RequestTypes.LOGOUT, null, 0, null, null, null);
+            Message message = new Message(RequestTypes.LOGOUT, null, 0, null, null);
             out.writeObject(secure.encryptAndSignMessage(message));
             out.flush();
 
             secure.resetSession();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Logout failed");
         }
     }
 }

@@ -33,7 +33,7 @@ public class RSA {
 
             //encrypt with private key
             cipher.init(Cipher.ENCRYPT_MODE, pr);
-            byte[] prEncrypted = cipher.doFinal(Utils.serialize(message));
+            byte[] prEncrypted = cipher.doFinal(SecurityUtils.serialize(message));
 
             //encrypt with public key
             cipher.init(Cipher.ENCRYPT_MODE, pu);
@@ -50,11 +50,11 @@ public class RSA {
 
             //decrypt with private key
             cipher.init(Cipher.DECRYPT_MODE, pu);
-            byte[] puDecrypted = cipher.doFinal(Utils.serialize(encryptedMessage));
+            byte[] puDecrypted = cipher.doFinal(SecurityUtils.serialize(encryptedMessage));
 
             //decrypt with public key
             cipher.init(Cipher.DECRYPT_MODE, pr);
-            return Utils.deserialize(cipher.doFinal(puDecrypted));
+            return SecurityUtils.deserialize(cipher.doFinal(puDecrypted));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class RSA {
         try {
             Signature sig = Signature.getInstance(Algorithms.RSA_SIGNATURE.INSTANCE);
             sig.initSign(key);
-            sig.update(Utils.serialize(message));
+            sig.update(SecurityUtils.serialize(message));
             return sig.sign();
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,7 +77,7 @@ public class RSA {
         try {
             Signature sig = Signature.getInstance(Algorithms.RSA_SIGNATURE.INSTANCE);
             sig.initVerify(key);
-            sig.update(Utils.serialize(message));
+            sig.update(SecurityUtils.serialize(message));
             return sig.verify(receivedSig);
         } catch (Exception e) {
             e.printStackTrace();
