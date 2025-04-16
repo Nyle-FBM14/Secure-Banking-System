@@ -1,39 +1,39 @@
-package com.bankserver.commands;
+package com.atm.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import com.bankserver.AtmHandler;
 import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
 import com.security.enumerations.RequestTypes;
 
-public class DepositCommand implements Command{
-    @SuppressWarnings("unused")
+public class EndCommand implements Command {
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private Message message;
     private SecureBanking secure;
 
-    public DepositCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure) {
+    public EndCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure) {
         this.in = in;
         this.out = out;
-        this.message = message;
         this.secure = secure;
     }
 
     @Override
     public void execute() {
         try {
-            AtmHandler.user.deposit(message.getAmount());
-
-            message = new Message(RequestTypes.DEPOSIT, "Success", 0, null, null);
+            Message message = new Message(RequestTypes.END, null, 0, null, null);
             SecuredMessage sMessage = secure.encryptAndSignMessage(message);
             out.writeObject(sMessage);
             out.flush();
+
+            sMessage = (SecuredMessage) in.readObject();
+            message = secure.decryptAndVerifyMessage(sMessage);
+            System.out.println(message.getMessage());
+
+            System.out.println("Terminating ATM.");
         } catch (Exception e) {
-            System.out.println("Deposit failed.");
+            System.out.println("End failed.");
             e.printStackTrace();
         }
     }

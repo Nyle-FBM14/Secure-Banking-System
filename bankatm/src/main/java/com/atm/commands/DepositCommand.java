@@ -32,9 +32,8 @@ public class DepositCommand implements Command {
             message = secure.decryptAndVerifyMessage(sMessage);
             System.out.println(message.getMessage());
         } catch (Exception e) {
-            System.out.println("Deposit failed");
+            System.out.println("Deposit failed.");
             e.printStackTrace();
         }
     }
-    
 }

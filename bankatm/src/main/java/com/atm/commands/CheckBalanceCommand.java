@@ -32,8 +32,8 @@ public class CheckBalanceCommand implements Command {
             message = secure.decryptAndVerifyMessage(sMessage);
             model.setBalance(String.valueOf(message.getAmount()));
         } catch (Exception e) {
-            System.out.println("Check balance failed");
+            System.out.println("Check balance failed.");
+            e.printStackTrace();
         }
     }
-    
 }

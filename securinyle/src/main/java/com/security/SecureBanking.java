@@ -87,7 +87,6 @@ public class SecureBanking {
 
             //generating masterkey
             masterKey = new SecretKeySpec(sharedKey, Algorithms.AES.INSTANCE);
-            System.out.println(masterKey);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

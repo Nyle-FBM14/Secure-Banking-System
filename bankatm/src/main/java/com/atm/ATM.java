@@ -11,13 +11,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-
 import com.atm.commands.ConnectCommand;
 import com.atm.controllers.Controller;
 import com.security.SecureBanking;
-import com.security.enumerations.MessageHeaders;
-import com.security.enumerations.RequestTypes;
 
 public class ATM extends Application {
 
@@ -43,8 +39,10 @@ public class ATM extends Application {
         stage.setTitle("Denarii Dispenser");
 
         stage.setOnCloseRequest(event -> {
-            //event.consume();
-            terminateConnection();
+            event.consume();
+            //Command command = new EndCommand(inputStream, outputStream, secure);
+            //command.execute();
+            stage.close();
         });
 
         scene = new Scene(loadFXML("login"), 700, 400);
@@ -68,23 +66,6 @@ public class ATM extends Application {
         return root;
     }
 
-    @SuppressWarnings("unchecked")
-    private static void terminateConnection() {
-        try {
-            HashMap<MessageHeaders, String> request = new HashMap<MessageHeaders, String>();
-            request.put(MessageHeaders.REQUESTTYPE, RequestTypes.END.toString());
-            outputStream.writeObject(request);
-            outputStream.flush();
-
-            HashMap<MessageHeaders, String> response = (HashMap<MessageHeaders, String>) inputStream.readObject();
-            System.out.println(response.get(MessageHeaders.RESPONSECODE));
-
-            inputStream.close();
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     public static void main(String[] args) {
         String hostName = "localhost";
         int portNumber = 15777;

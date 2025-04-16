@@ -44,7 +44,8 @@ public class ConnectCommand implements Command{
 
             System.out.println("Connection secured with ATM ID " + atm.getId());
         } catch (Exception e) {
-            System.out.println("Connect failed");
+            System.out.println("Connect failed.");
+            e.printStackTrace();
         }
     }
 }

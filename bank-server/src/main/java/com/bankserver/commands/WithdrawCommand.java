@@ -33,7 +33,8 @@ public class WithdrawCommand implements Command {
             out.writeObject(sMessage);
             out.flush();
         } catch (Exception e) {
-            System.out.println("Withdraw failed");
+            System.out.println("Withdraw failed.");
+            e.printStackTrace();
         }
 
     }

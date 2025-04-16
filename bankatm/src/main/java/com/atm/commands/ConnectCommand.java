@@ -69,7 +69,8 @@ public class ConnectCommand implements Command {
 
             //acknowledgements?
         } catch (Exception e) {
-            System.out.println("Connect failed");
+            System.out.println("Connect failed.");
+            e.printStackTrace();
         }
     }
 }

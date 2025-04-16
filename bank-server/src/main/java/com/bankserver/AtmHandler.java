@@ -6,7 +6,6 @@ import com.bankserver.commands.CheckBalanceCommand;
 import com.bankserver.commands.Command;
 import com.bankserver.commands.ConnectCommand;
 import com.bankserver.commands.DepositCommand;
-import com.bankserver.commands.EndCommand;
 import com.bankserver.commands.LoginCommand;
 import com.bankserver.commands.LogoutCommand;
 import com.bankserver.commands.RegisterCommand;
@@ -27,7 +26,7 @@ public class AtmHandler extends Thread {
         this.socket = socket;
     }
 
-    private boolean connectionLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception {
+    private boolean connectionLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception { //removed END command
         while(true) {
             Message message = (Message) in.readObject();
             Command command = null;
@@ -40,16 +39,12 @@ public class AtmHandler extends Thread {
                     command = new RegisterCommand(in, out, message);
                     command.execute();
                     break;
-                case RequestTypes.END:
-                    command = new EndCommand(in, out, message);
-                    command.execute();
-                    return false;
                 default:
                     System.out.println("default");
             }
         }
     }
-    private boolean loginLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception {
+    private boolean loginLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception { //removed END command
         while(true) {
             SecuredMessage sMessage = (SecuredMessage) in.readObject();
             Message message = secure.decryptAndVerifyMessage(sMessage);
@@ -60,16 +55,11 @@ public class AtmHandler extends Thread {
                         command = new LoginCommand(in, out, secure, message);
                         command.execute();
                         return true;
-                    case RequestTypes.END:
-                        command = new EndCommand(in, out, message);
-                        command.execute();
-                        return false;
                     default:
                         System.out.println("default");
                 }
             }
-            
-        }
+        } //end of while loop
     }
     public void run() {
         try (
@@ -87,7 +77,7 @@ public class AtmHandler extends Thread {
                     
                     Command command = null;
                     System.out.println("\n****************\nCommand received: " + message.getRequestType().toString());
-                    switch(message.getRequestType()){
+                    switch(message.getRequestType()){ //removed END command
                         case RequestTypes.DEPOSIT: //deposit
                             command = new DepositCommand(in, out, message, secure);
                             break;
@@ -99,12 +89,6 @@ public class AtmHandler extends Thread {
                             break;
                         case RequestTypes.LOGOUT: //client logout
                             command = new LogoutCommand(in, out, message, secure);
-                            online = loginLoop(in, out);
-                            break;
-                        case RequestTypes.END: //atm or program that registers users terminates their connection
-                            //command = new EndCommand(in, out, message);
-                            online = false;
-                            bank.printBankData();
                             break;
                         default:
                             System.out.println("ATM Handler default");
@@ -114,17 +98,23 @@ public class AtmHandler extends Thread {
                         System.out.println("Executing command...");
                         command.execute();
                         System.out.println("Waiting for next request...\n****************\n");
+                        if(message.getRequestType() == RequestTypes.LOGOUT) {
+                            online = loginLoop(in, out);
+                        }
                     }
                 } //end of while loop
             } //end of if
-            
-            in.close();
-            out.close();
-            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                bank.printBankData();
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

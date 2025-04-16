@@ -32,7 +32,8 @@ public class WithdrawCommand implements Command{
             message = secure.decryptAndVerifyMessage(sMessage);
             System.out.println(message.getMessage());
         } catch (Exception e) {
-            System.out.println("Withdraw failed");
+            System.out.println("Withdraw failed.");
+            e.printStackTrace();
         }
     }
     

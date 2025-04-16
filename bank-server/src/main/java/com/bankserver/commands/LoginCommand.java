@@ -100,7 +100,8 @@ public class LoginCommand implements Command{
             dhExchange(credentials[0], credentials[1]);
             generateAndSendSessionKeys();
         } catch (Exception e) {
-            System.out.println("Login failed");
+            System.out.println("Login failed.");
+            e.printStackTrace();
         }
     }
 }

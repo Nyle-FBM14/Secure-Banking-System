@@ -30,7 +30,8 @@ public class CheckBalanceCommand implements Command {
             out.writeObject(sMessage);
             out.flush();
         } catch (Exception e) {
-            System.out.println("Check balance failed");
+            System.out.println("Check balance failed.");
+            e.printStackTrace();
         }
     }
 }

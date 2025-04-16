@@ -4,10 +4,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.security.Message;
 import com.security.SecureBanking;
+import com.security.SecuredMessage;
 import com.security.enumerations.RequestTypes;
 
 public class LogoutCommand implements Command{
-    @SuppressWarnings("unused")
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private SecureBanking secure;
@@ -22,12 +22,17 @@ public class LogoutCommand implements Command{
     public void execute() {
         try {
             Message message = new Message(RequestTypes.LOGOUT, null, 0, null, null);
-            out.writeObject(secure.encryptAndSignMessage(message));
+            SecuredMessage sMessage = secure.encryptAndSignMessage(message);
+            out.writeObject(sMessage);
             out.flush();
 
             secure.resetSession();
+            sMessage = (SecuredMessage) in.readObject();
+            message = secure.decryptAndVerifyMessage(sMessage);
+            System.out.println(message.getMessage());
         } catch (Exception e) {
-            System.out.println("Logout failed");
+            System.out.println("Logout failed.");
+            e.printStackTrace();
         }
     }
 }

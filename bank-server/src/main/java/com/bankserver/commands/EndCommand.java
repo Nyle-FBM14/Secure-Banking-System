@@ -22,7 +22,8 @@ public class EndCommand implements Command {
         try {
             
         } catch (Exception e) {
-            System.out.println("End failed");
+            System.out.println("End failed.");
+            e.printStackTrace();
         }
     }
     

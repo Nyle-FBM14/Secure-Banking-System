@@ -24,7 +24,7 @@ public class LoginCommand implements Command{
         this.pin = pin;
     }
 
-    private void sendCredentials() throws Exception {
+    private void sendCredentials() throws Exception { //does not handle wrong credentials
         //send card number
         //cardNum = SecurityUtils.hashFunction(cardNum);
         Message message = new Message(RequestTypes.LOGIN, cardNum, 0, null, null);
@@ -86,10 +86,9 @@ public class LoginCommand implements Command{
             dhExchange();
             getSessionKeys();
             model.setCredentials(cardNum, pin);
-            
-            System.out.println("got keys");
         } catch (Exception e) {
-            System.out.println("Login failed");
+            System.out.println("Login failed.");
+            e.printStackTrace();
         }
     }
 }
