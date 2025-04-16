@@ -35,6 +35,7 @@ public class ControllerMainPage extends Controller {
     void checkBalance(ActionEvent event) {
         CheckBalanceCommand command = new CheckBalanceCommand(in, out, secure);
         command.execute();
+        ATM.setRoot("checkBalancePage");
     }
 
     @FXML

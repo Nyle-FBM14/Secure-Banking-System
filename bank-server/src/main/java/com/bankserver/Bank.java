@@ -106,4 +106,19 @@ public class Bank {
             System.out.println("here");
         }
     }
+
+    public void writeClients() {
+        try {
+            FileWriter userFile = new FileWriter("bank-server\\src\\main\\resources\\bank_users.txt");
+            BufferedWriter writer = new BufferedWriter(userFile);
+            
+            for(BankUser b: bankUsers) {
+                writer.write(b.getCardNum() + "," + b.getPin() + "," + Double.valueOf(b.checkBalance()) + "\n");
+            }
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("here");
+        }
+    }
 }

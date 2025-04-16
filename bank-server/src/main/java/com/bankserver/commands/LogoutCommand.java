@@ -32,8 +32,8 @@ public class LogoutCommand implements Command {
             message = new Message(RequestTypes.LOGOUT, "Logout successful.", 0, null, null);
             out.writeObject(secure.encryptAndSignMessage(message));
             out.flush();
-            //Bank bank = Bank.getBankInstance();
-            //write users
+            Bank bank = Bank.getBankInstance();
+            bank.writeClients();
         } catch (Exception e) {
             System.out.println("Logout failed.");
             e.printStackTrace();
