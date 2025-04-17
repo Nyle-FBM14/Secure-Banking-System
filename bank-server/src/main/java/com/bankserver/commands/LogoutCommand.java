@@ -2,6 +2,7 @@ package com.bankserver.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Logger;
 
 import com.bankserver.AtmHandler;
 import com.bankserver.Bank;
@@ -15,18 +16,20 @@ public class LogoutCommand implements Command {
     private ObjectOutputStream out;
     private Message message;
     private SecureBanking secure;
+    private Logger logger;
 
-    public LogoutCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure) {
-        System.out.println("here");
+    public LogoutCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure, Logger logger) {
         this.in = in;
         this.out = out;
         this.message = message;
         this.secure = secure;
+        this.logger = logger;
     }
     @Override
     public void execute() {
         try {
             secure.resetSession();
+            logger.info(AtmHandler.user.getCardNum() + " logged out.");
             AtmHandler.user = null;
 
             message = new Message(RequestTypes.LOGOUT, "Logout successful.", 0, null, null);

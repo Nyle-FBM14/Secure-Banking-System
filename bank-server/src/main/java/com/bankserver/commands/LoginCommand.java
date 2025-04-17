@@ -2,6 +2,7 @@ package com.bankserver.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Logger;
 
 import com.bankserver.AtmHandler;
 import com.bankserver.Bank;
@@ -17,12 +18,14 @@ public class LoginCommand implements Command{
     private ObjectOutputStream out;
     private SecureBanking secure;
     private Message message;
+    private Logger logger;
 
-    public LoginCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, Message message) {
+    public LoginCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, Message message, Logger logger) {
         this.in = in;
         this.out = out;
         this.secure = secure;
         this.message = message;
+        this.logger = logger;
     }
 
     private String[] receiveCredentials() throws Exception {
@@ -99,6 +102,7 @@ public class LoginCommand implements Command{
             String[] credentials = receiveCredentials();
             dhExchange(credentials[0], credentials[1]);
             generateAndSendSessionKeys();
+            logger.info(AtmHandler.user.getCardNum() + " logged in.");
         } catch (Exception e) {
             System.out.println("Login failed.");
             e.printStackTrace();

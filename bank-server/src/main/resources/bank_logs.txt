@@ -1,0 +1,9 @@
+Apr 17, 2025 9:05:47 A.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1111222233337777 logged in.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxLg2d2X03Cx1nRq34AvLANU=
+Apr 17, 2025 9:05:49 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1111222233337777 checked their balance.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxCFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+Apr 17, 2025 9:05:51 A.M. com.bankserver.commands.LogoutCommand execute
+INFO: Original Log: 1111222233337777 logged out.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxAJn4d3Te98b6S61j2fRY8I=

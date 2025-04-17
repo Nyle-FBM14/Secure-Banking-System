@@ -2,6 +2,7 @@ package com.bankserver.commands;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Logger;
 
 import com.bankserver.AtmHandler;
 import com.security.Message;
@@ -15,12 +16,14 @@ public class CheckBalanceCommand implements Command {
     private ObjectOutputStream out;
     private Message message;
     private SecureBanking secure;
+    private Logger logger;
 
-    public CheckBalanceCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure) {
+    public CheckBalanceCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure, Logger logger) {
         this.in = in;
         this.out = out;
         this.message = message;
         this.secure = secure;
+        this.logger = logger;
     }
     @Override
     public void execute() {
@@ -29,6 +32,7 @@ public class CheckBalanceCommand implements Command {
             SecuredMessage sMessage = secure.encryptAndSignMessage(message);
             out.writeObject(sMessage);
             out.flush();
+            logger.info(AtmHandler.user.getCardNum() + " checked their balance.");
         } catch (Exception e) {
             System.out.println("Check balance failed.");
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package com.bankserver;
 
 import java.net.*;
+import java.util.logging.Logger;
 import java.io.*;
 import com.bankserver.commands.CheckBalanceCommand;
 import com.bankserver.commands.Command;
@@ -17,13 +18,15 @@ import com.security.enumerations.RequestTypes;
 
 public class AtmHandler extends Thread {
     private Socket socket = null;
+    private Logger logger;
     private Bank bank = Bank.getBankInstance();
     private SecureBanking secure = new SecureBanking();
     public static BankUser user;
 
-    public AtmHandler(Socket socket) {
+    public AtmHandler(Socket socket, Logger logger) {
         super("AtmHandler");
         this.socket = socket;
+        this.logger = logger;
     }
 
     private boolean connectionLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception { //removed END command
@@ -52,7 +55,7 @@ public class AtmHandler extends Thread {
                 Command command = null;
                 switch (message.getRequestType()) {
                     case RequestTypes.LOGIN:
-                        command = new LoginCommand(in, out, secure, message);
+                        command = new LoginCommand(in, out, secure, message, logger);
                         command.execute();
                         return true;
                     default:
@@ -65,8 +68,10 @@ public class AtmHandler extends Thread {
         try (
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                EncryptingHandler handler = new EncryptingHandler();
             )
         {
+            logger.addHandler(handler);
             if(connectionLoop(in, out)) {
                 boolean online = loginLoop(in, out);
                 while(online){
@@ -79,16 +84,16 @@ public class AtmHandler extends Thread {
                     System.out.println("\n****************\nCommand received: " + message.getRequestType().toString());
                     switch(message.getRequestType()){ //removed END command
                         case RequestTypes.DEPOSIT: //deposit
-                            command = new DepositCommand(in, out, message, secure);
+                            command = new DepositCommand(in, out, message, secure, logger);
                             break;
                         case RequestTypes.WITHDRAW: //withdraw
-                            command = new WithdrawCommand(in, out, message, secure);
+                            command = new WithdrawCommand(in, out, message, secure, logger);
                             break;
                         case RequestTypes.CHECK_BALANCE: //check balanace
-                            command = new CheckBalanceCommand(in, out, message, secure);
+                            command = new CheckBalanceCommand(in, out, message, secure, logger);
                             break;
                         case RequestTypes.LOGOUT: //client logout
-                            command = new LogoutCommand(in, out, message, secure);
+                            command = new LogoutCommand(in, out, message, secure, logger);
                             break;
                         default:
                             System.out.println("ATM Handler default");
