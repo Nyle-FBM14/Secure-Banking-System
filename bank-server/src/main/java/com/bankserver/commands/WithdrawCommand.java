@@ -4,7 +4,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.logging.Logger;
 
-import com.bankserver.AtmHandler;
 import com.bankserver.BankUser;
 import com.security.Message;
 import com.security.SecureBanking;
