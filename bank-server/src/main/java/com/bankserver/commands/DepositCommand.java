@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Logger;
 
 import com.bankserver.AtmHandler;
+import com.bankserver.BankUser;
 import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
@@ -17,20 +18,22 @@ public class DepositCommand implements Command{
     private Message message;
     private SecureBanking secure;
     private Logger logger;
+    private BankUser user;
 
-    public DepositCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure, Logger logger) {
+    public DepositCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure, Logger logger, BankUser user) {
         this.in = in;
         this.out = out;
         this.message = message;
         this.secure = secure;
         this.logger = logger;
+        this.user = user;
     }
 
     @Override
     public void execute() {
         try {
-            AtmHandler.user.deposit(message.getAmount());
-            logger.info(AtmHandler.user.getCardNum() + " deposited $" + message.getAmount());
+            user.deposit(message.getAmount());
+            logger.info(user.getCardNum() + " deposited $" + message.getAmount());
 
             message = new Message(RequestTypes.DEPOSIT, "Success", 0, null, null);
             SecuredMessage sMessage = secure.encryptAndSignMessage(message);

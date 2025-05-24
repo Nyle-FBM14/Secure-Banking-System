@@ -16,7 +16,12 @@ public class BankServer {
         logger.setUseParentHandlers(false);
         
         boolean listening = true;
-        try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
+        try (
+                ServerSocket serverSocket = new ServerSocket(portNumber);
+                EncryptingHandler handler = new EncryptingHandler();
+            )
+        {
+            logger.addHandler(handler);
             System.out.println("Server running...");
             while (listening) {
 	            new AtmHandler(serverSocket.accept(), logger).start();

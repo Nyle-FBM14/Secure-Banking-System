@@ -21,7 +21,7 @@ public class AtmHandler extends Thread {
     private Logger logger;
     private Bank bank = Bank.getBankInstance();
     private SecureBanking secure = new SecureBanking();
-    public static BankUser user;
+    private BankUser user;
 
     public AtmHandler(Socket socket, Logger logger) {
         super("AtmHandler");
@@ -29,6 +29,9 @@ public class AtmHandler extends Thread {
         this.logger = logger;
     }
 
+    public void setUser(BankUser user) {
+        this.user = user;
+    }
     private boolean connectionLoop(ObjectInputStream in, ObjectOutputStream out) throws Exception { //removed END command
         while(true) {
             Message message = (Message) in.readObject();
@@ -55,7 +58,7 @@ public class AtmHandler extends Thread {
                 Command command = null;
                 switch (message.getRequestType()) {
                     case RequestTypes.LOGIN:
-                        command = new LoginCommand(in, out, secure, message, logger);
+                        command = new LoginCommand(in, out, secure, message, logger, this);
                         command.execute();
                         return true;
                     default:
@@ -68,10 +71,8 @@ public class AtmHandler extends Thread {
         try (
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-                EncryptingHandler handler = new EncryptingHandler();
             )
         {
-            logger.addHandler(handler);
             if(connectionLoop(in, out)) {
                 boolean online = loginLoop(in, out);
                 while(online){
@@ -84,16 +85,16 @@ public class AtmHandler extends Thread {
                     System.out.println("\n****************\nCommand received: " + message.getRequestType().toString());
                     switch(message.getRequestType()){ //removed END command
                         case RequestTypes.DEPOSIT: //deposit
-                            command = new DepositCommand(in, out, message, secure, logger);
+                            command = new DepositCommand(in, out, message, secure, logger, user);
                             break;
                         case RequestTypes.WITHDRAW: //withdraw
-                            command = new WithdrawCommand(in, out, message, secure, logger);
+                            command = new WithdrawCommand(in, out, message, secure, logger, user);
                             break;
                         case RequestTypes.CHECK_BALANCE: //check balanace
-                            command = new CheckBalanceCommand(in, out, message, secure, logger);
+                            command = new CheckBalanceCommand(in, out, message, secure, logger, user);
                             break;
                         case RequestTypes.LOGOUT: //client logout
-                            command = new LogoutCommand(in, out, message, secure, logger);
+                            command = new LogoutCommand(in, out, message, secure, logger, user, this);
                             break;
                         default:
                             System.out.println("ATM Handler default");

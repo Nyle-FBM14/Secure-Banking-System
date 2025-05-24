@@ -1,9 +1,105 @@
-Apr 17, 2025 9:05:47 A.M. com.bankserver.commands.LoginCommand execute
+May 23, 2025 10:31:18 P.M. com.bankserver.commands.LoginCommand execute
 INFO: Original Log: 1111222233337777 logged in.
 Encrypted Log: LOTcUL53CwvpMZpEx3kkxLg2d2X03Cx1nRq34AvLANU=
-Apr 17, 2025 9:05:49 A.M. com.bankserver.commands.CheckBalanceCommand execute
+May 23, 2025 10:31:35 P.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1234567890123456 logged in.
+Encrypted Log: cHVRKjISo5pA+pLg7wiOG7g2d2X03Cx1nRq34AvLANU=
+May 23, 2025 10:31:44 P.M. com.bankserver.commands.DepositCommand execute
+INFO: Original Log: 1234567890123456 deposited $50.0
+Encrypted Log: cHVRKjISo5pA+pLg7wiOG4sIcW4jqJr5Tmd0pZRyrGMjncaGTpv/s+DpTDu73GFx
+May 23, 2025 10:31:47 P.M. com.bankserver.commands.DepositCommand execute
+INFO: Original Log: 1234567890123456 deposited $50.0
+Encrypted Log: cHVRKjISo5pA+pLg7wiOG4sIcW4jqJr5Tmd0pZRyrGMjncaGTpv/s+DpTDu73GFx
+May 23, 2025 10:32:04 P.M. com.bankserver.commands.WithdrawCommand execute
+INFO: Original Log: 1234567890123456 withdrew $100.0
+Encrypted Log: cHVRKjISo5pA+pLg7wiOG1ce9TC4EefTrsvsgcCjWSsjncaGTpv/s+DpTDu73GFx
+May 23, 2025 10:32:13 P.M. com.bankserver.commands.LogoutCommand execute
+INFO: Original Log: 1234567890123456 logged out.
+Encrypted Log: cHVRKjISo5pA+pLg7wiOGwJn4d3Te98b6S61j2fRY8I=
+May 24, 2025 2:25:53 A.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1111222233337777 logged in.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxLg2d2X03Cx1nRq34AvLANU=
+May 24, 2025 2:26:03 A.M. com.bankserver.commands.DepositCommand execute
+INFO: Original Log: 1111222233337777 deposited $900.0
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxFuFzBJZ/nkYlA2pmxjzalE4UFcc9nENJcDEwsdzGnbZ
+May 24, 2025 2:26:06 A.M. com.bankserver.commands.CheckBalanceCommand execute
 INFO: Original Log: 1111222233337777 checked their balance.
 Encrypted Log: LOTcUL53CwvpMZpEx3kkxCFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
-Apr 17, 2025 9:05:51 A.M. com.bankserver.commands.LogoutCommand execute
+May 24, 2025 2:26:16 A.M. com.bankserver.commands.WithdrawCommand execute
+INFO: Original Log: 1111222233337777 withdrew $1000.0
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxAcC7hW2B+Vrp+Hcj2WP/IU4UFcc9nENJcDEwsdzGnbZ
+May 24, 2025 2:26:18 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1111222233337777 checked their balance.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxCFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+May 24, 2025 2:26:20 A.M. com.bankserver.commands.LogoutCommand execute
+INFO: Original Log: 1111222233337777 logged out.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxAJn4d3Te98b6S61j2fRY8I=
+May 24, 2025 2:27:34 A.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1111222233337777 logged in.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxLg2d2X03Cx1nRq34AvLANU=
+May 24, 2025 2:27:59 A.M. com.bankserver.commands.DepositCommand execute
+INFO: Original Log: 1111222233337777 deposited $100.0
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxJIo+X9r49Vflw3YzV3nMmU4UFcc9nENJcDEwsdzGnbZ
+May 24, 2025 2:28:02 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1111222233337777 checked their balance.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxCFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+May 24, 2025 2:28:24 A.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1234123412341234 logged in.
+Encrypted Log: x/v5SF07YcKXyABt63LtX7g2d2X03Cx1nRq34AvLANU=
+May 24, 2025 2:28:30 A.M. com.bankserver.commands.DepositCommand execute
+INFO: Original Log: 1234123412341234 deposited $300.0
+Encrypted Log: x/v5SF07YcKXyABt63LtXxn23lmaVFI7iHToBnwgVbE4UFcc9nENJcDEwsdzGnbZ
+May 24, 2025 2:28:35 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1234123412341234 checked their balance.
+Encrypted Log: x/v5SF07YcKXyABt63LtXyFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+May 24, 2025 2:28:37 A.M. com.bankserver.commands.LogoutCommand execute
+INFO: Original Log: 1234123412341234 logged out.
+Encrypted Log: x/v5SF07YcKXyABt63LtXwJn4d3Te98b6S61j2fRY8I=
+May 24, 2025 2:33:31 A.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1111222233337777 logged in.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxLg2d2X03Cx1nRq34AvLANU=
+May 24, 2025 2:33:43 A.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1234123412341234 logged in.
+Encrypted Log: x/v5SF07YcKXyABt63LtX7g2d2X03Cx1nRq34AvLANU=
+May 24, 2025 2:33:48 A.M. com.bankserver.commands.WithdrawCommand execute
+INFO: Original Log: 1234123412341234 withdrew $2000.0
+Encrypted Log: x/v5SF07YcKXyABt63LtX3h8+3fnzaDFDfeKM7/WEZc4UFcc9nENJcDEwsdzGnbZ
+May 24, 2025 2:33:50 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1234123412341234 checked their balance.
+Encrypted Log: x/v5SF07YcKXyABt63LtXyFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+May 24, 2025 2:33:53 A.M. com.bankserver.commands.LogoutCommand execute
+INFO: Original Log: 1234123412341234 logged out.
+Encrypted Log: x/v5SF07YcKXyABt63LtXwJn4d3Te98b6S61j2fRY8I=
+May 24, 2025 3:00:28 A.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1111222233337777 logged in.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxLg2d2X03Cx1nRq34AvLANU=
+May 24, 2025 3:00:50 A.M. com.bankserver.commands.LoginCommand execute
+INFO: Original Log: 1234123412341234 logged in.
+Encrypted Log: x/v5SF07YcKXyABt63LtX7g2d2X03Cx1nRq34AvLANU=
+May 24, 2025 3:00:56 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1111222233337777 checked their balance.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxCFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+May 24, 2025 3:01:01 A.M. com.bankserver.commands.WithdrawCommand execute
+INFO: Original Log: 1111222233337777 withdrew $200.0
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxJmAPztUr9Rzi2Sv85uaKicjncaGTpv/s+DpTDu73GFx
+May 24, 2025 3:01:03 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1111222233337777 checked their balance.
+Encrypted Log: LOTcUL53CwvpMZpEx3kkxCFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+May 24, 2025 3:01:10 A.M. com.bankserver.commands.DepositCommand execute
+INFO: Original Log: 1234123412341234 deposited $7000.0
+Encrypted Log: x/v5SF07YcKXyABt63LtX/gP/W1GDDPtvI0vqBkBih0AvzglBcWrTsZW0z+kU7JE
+May 24, 2025 3:01:12 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1234123412341234 checked their balance.
+Encrypted Log: x/v5SF07YcKXyABt63LtXyFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+May 24, 2025 3:01:20 A.M. com.bankserver.commands.WithdrawCommand execute
+INFO: Original Log: 1234123412341234 withdrew $4000.0
+Encrypted Log: x/v5SF07YcKXyABt63LtX9JC8VfGeEAc4f3ax9SGplM4UFcc9nENJcDEwsdzGnbZ
+May 24, 2025 3:01:21 A.M. com.bankserver.commands.CheckBalanceCommand execute
+INFO: Original Log: 1234123412341234 checked their balance.
+Encrypted Log: x/v5SF07YcKXyABt63LtXyFy2e7llBNMWx2uymhKLTZZk+noalVBH/KGJH+rtyhA
+May 24, 2025 3:01:24 A.M. com.bankserver.commands.LogoutCommand execute
+INFO: Original Log: 1234123412341234 logged out.
+Encrypted Log: x/v5SF07YcKXyABt63LtXwJn4d3Te98b6S61j2fRY8I=
+May 24, 2025 3:01:26 A.M. com.bankserver.commands.LogoutCommand execute
 INFO: Original Log: 1111222233337777 logged out.
 Encrypted Log: LOTcUL53CwvpMZpEx3kkxAJn4d3Te98b6S61j2fRY8I=

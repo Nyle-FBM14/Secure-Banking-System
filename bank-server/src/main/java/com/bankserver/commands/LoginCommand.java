@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.bankserver.AtmHandler;
 import com.bankserver.Bank;
+import com.bankserver.BankUser;
 import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
@@ -19,13 +20,16 @@ public class LoginCommand implements Command{
     private SecureBanking secure;
     private Message message;
     private Logger logger;
+    private AtmHandler atmHandler;
+    private BankUser user;
 
-    public LoginCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, Message message, Logger logger) {
+    public LoginCommand(ObjectInputStream in, ObjectOutputStream out, SecureBanking secure, Message message, Logger logger, AtmHandler atmHandler) {
         this.in = in;
         this.out = out;
         this.secure = secure;
         this.message = message;
         this.logger = logger;
+        this.atmHandler = atmHandler;
     }
 
     private String[] receiveCredentials() throws Exception {
@@ -34,8 +38,9 @@ public class LoginCommand implements Command{
         String cardNum = message.getMessage();
 
         //check if user exists
-        AtmHandler.user = bank.getBankUser(cardNum);
-        if(AtmHandler.user == null) {
+        user = bank.getBankUser(cardNum);
+        atmHandler.setUser(user);
+        if(user == null) {
             message = new Message(RequestTypes.LOGIN, "No user found.", 0, null, null);
         }
         else{
@@ -51,7 +56,7 @@ public class LoginCommand implements Command{
         String pin = message.getMessage();
 
         //validate user
-        if(AtmHandler.user.authenticate(pin)) {
+        if(user.authenticate(pin)) {
             message = new Message(RequestTypes.LOGIN, "Acknowledged.", 0, null, null);
         }
         else {
@@ -102,7 +107,7 @@ public class LoginCommand implements Command{
             String[] credentials = receiveCredentials();
             dhExchange(credentials[0], credentials[1]);
             generateAndSendSessionKeys();
-            logger.info(AtmHandler.user.getCardNum() + " logged in.");
+            logger.info(user.getCardNum() + " logged in.");
         } catch (Exception e) {
             System.out.println("Login failed.");
             e.printStackTrace();

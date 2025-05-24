@@ -19,6 +19,12 @@ import com.security.enumerations.KeySizes;
 
 public class SecurityUtils {
 
+    /*
+     * Note to self: ByteArrayOutputStream writes data into a byte array
+     * ObjectOutputStream serializes an object into a stream of bytes
+     * It writes into ByteArrayOutputStream
+     * ByteArrayOutputStream calls toByteArray() to return byte array
+    */
     public static byte[] serialize(Object object) {
         try {
             ByteArrayOutputStream byteArrMaker = new ByteArrayOutputStream();
@@ -31,6 +37,10 @@ public class SecurityUtils {
         }
         return null;
     }
+    /*
+     * Note to self: ByteArrayInputStream takes a byte array and turns it into stream
+     * ObjectInputStream reads from that stream and deserializes it
+    */
     public static Object deserialize(byte[] buffer) {
         try {
             ByteArrayInputStream arrayToStream = new ByteArrayInputStream(buffer);
@@ -78,12 +88,6 @@ public class SecurityUtils {
         return hashString.toString();
     }
 
-    /*
-     * Note to self: ByteArrayOutputStream writes data into a byte array
-     * ObjectOutputStream serializes an object into a stream of bytes
-     * It writes into ByteArrayOutputStream
-     * ByteArrayOutputStream calls toByteArray() to return byte array
-     */
     public static byte[] encrypt(Object message, Key key, String instance) {
         try{
             Cipher cipher = Cipher.getInstance(instance);
@@ -94,10 +98,6 @@ public class SecurityUtils {
         }
         return null;
     }
-    /*
-     * Note to self: ByteArrayInputStream takes a byte array and turns it into stream
-     * ObjectInputStream reads from that stream and deserializes it
-     */
     public static Object decrypt(byte[] encryptedMessage, Key key, String instance) {
         try {
             Cipher cipher = Cipher.getInstance(instance);

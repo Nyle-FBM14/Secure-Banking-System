@@ -17,7 +17,7 @@ import com.security.SecureBanking;
 
 public class ATM extends Application {
 
-    private static String id = "ATM1";
+    private static String id = "ATM2";
     private static Scene scene;
     /*
         I think it's better to just make getter methods for the Object Input/Output Streams.

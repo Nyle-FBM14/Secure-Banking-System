@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.util.logging.Logger;
 
 import com.bankserver.AtmHandler;
+import com.bankserver.BankUser;
 import com.security.Message;
 import com.security.SecureBanking;
 import com.security.SecuredMessage;
@@ -17,20 +18,22 @@ public class WithdrawCommand implements Command {
     private Message message;
     private SecureBanking secure;
     private Logger logger;
+    private BankUser user;
 
-    public WithdrawCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure, Logger logger) {
+    public WithdrawCommand (ObjectInputStream in, ObjectOutputStream out, Message message, SecureBanking secure, Logger logger, BankUser user) {
         this.in = in;
         this.out = out;
         this.message = message;
         this.secure = secure;
         this.logger = logger;
+        this.user = user;
     }
 
     @Override
     public void execute() {
         try {
-            AtmHandler.user.withdraw(message.getAmount());
-            logger.info(AtmHandler.user.getCardNum() + " withdrew $" + message.getAmount());
+            user.withdraw(message.getAmount());
+            logger.info(user.getCardNum() + " withdrew $" + message.getAmount());
             
             message = new Message(RequestTypes.WITHDRAW, "Success", 0, null, null);
             SecuredMessage sMessage = secure.encryptAndSignMessage(message);
